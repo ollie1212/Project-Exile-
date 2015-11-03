@@ -1,4 +1,6 @@
 var userWeapon = "";
+var chosenMonster = "";
+var count = 0;
 var weapons = [
 	{ id: 1, Name: "sword", Damage: 15 },
 	{ id: 2, Name: "halberd", Damage: 25 },
@@ -23,9 +25,21 @@ var monsters = [
     new actor("highwayman", 200, 3),
     new actor("hobb", 120, 2)];
 
+	
+function start()
+{
+	writeToTextArea("Welcome to Our Text Based Adventure Game!");
+	spawnMonster();
+}	
+	
+	
 function action() {
+	var currentMonster = spawnMonster();
     var userInput = document.getElementById("userInput").value.toLowerCase();
     var strArray = userInput.split(" ");
+	if(count == 0){
+		currentMonsterHealth = chosenMonster.health
+	}else{
 
     for (var i = 0; i < strArray.length; i++) {
         for (var j = 0; j < weapons.length; j++) {
@@ -40,10 +54,10 @@ function action() {
         for (var j = 0; j < actionArray.length; j++) {
             if (strArray[i] == actionArray[j]) {
                 userAction = strArray[i];
+				currentMonsterHealth = currentMonsterHealth - 
             }
         }
     }
-
 
     for (var i = 0; i < strArray.length; i++) {
         if (strArray[i] == "check") {
@@ -80,7 +94,7 @@ function action() {
     }
 
     writeToTextArea("" + actor.Name + " " + userAction + " with " + userWeapon);
-
+	}
 }
 
 function writeToTextArea(string) {
@@ -88,8 +102,23 @@ function writeToTextArea(string) {
 
 }
 
+function spawnMonster()
+{
+	 var rand = Math.floor(Math.random()*monsters.length);
+	 chosenMonster = monsters[rand];
+	 writeToTextArea("You are fighting: " + chosenMonster.Name);
+	 return chosenMonster;
+}
+
 //function userStatus()
 //{
 //writeToTextArea("Your Current level is: " + newUser.Name);
 
 //}
+
+function damage(weapon, action, lvlMulti)
+{
+	
+	
+	
+}
