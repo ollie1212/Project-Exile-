@@ -1,13 +1,7 @@
-// JavaScript source code
 var userWeapon = "";
 var chosenMonster = "";
 var count = 0;
-var weapons = [
-	{ id: 1, Name: "sword", Damage: 15 },
-	{ id: 2, Name: "halberd", Damage: 25 },
-	{ id: 3, Name: "rapier", Damage: 10 },
-	{ id: 4, Name: "claymore", Damage: 20 }
-];
+
 var actionArray = [
 { Name: "attack", DamageMulti: 1.2 },
 { Name: "Slash", DamageMulti: 1.1 },
@@ -28,12 +22,37 @@ function actor(Name, Health, MaxHealth, Level, EXP, MaxEXP) {
 }
 
 
-var newUser = new actor("you", 200, 200 , 1, 0, 20);
+var newUser = new actor("you", 200, 200, 1, 0, 20);
 var monsters = [
     new actor("skeleton", 40, 40, 1, 15, 15),
-    new actor("wolf", 60, 60, 1, 20, 20 ),
+    new actor("wolf", 60, 60, 1, 20, 20),
     new actor("highwayman", 200, 200, 3, 40, 40),
     new actor("hobb", 120, 120, 2, 30, 30)
+];
+
+function prefix(Name, DamageMod) {
+    this.Name = Name;
+    this.DamageMod = DamageMod;
+}
+
+var weaponPrefix = [
+	new prefix("common", 1),
+	new prefix("rusty", 0.6),
+	new prefix("refined", 1.2),
+	new prefix("legendary", 1000)
+];
+
+function weapons(Name, Damage, Prefix) {
+    this.Name = Name;
+    this.Damage = Damage;
+    this.Prefix = weaponPrefix[0];
+}
+
+var weapon = [
+	new weapons("sword", 15, weaponPrefix[0]),
+	new weapons("halberd", 25, weaponPrefix[0]),
+	new weapons("rapier", 10, weaponPrefix[0]),
+	new weapons("claymore", 20, weaponPrefix[0])
 ];
 
 
@@ -47,17 +66,16 @@ function action() {
 
     var userInput = document.getElementById("userInput").value.toLowerCase();
     var strArray = userInput.split(" ");
-    if (count == 0)
-    {
+    if (count == 0) {
         currentMonsterHealth = chosenMonster.Health;
         count = 1;
     } else {
 
         for (var i = 0; i < strArray.length; i++) {
-            for (var j = 0; j < weapons.length; j++) {
-                if (strArray[i] == weapons[j].Name) {
+            for (var j = 0; j < weapon.length; j++) {
+                if (strArray[i] == weapon[j].Name) {
                     userWeapon = strArray[i];
-                    userWeaponDamage = weapons[j].Damage;
+                    userWeaponDamage = weapon[j].Damage;
                 }
             }
         }
@@ -109,13 +127,11 @@ function action() {
         }
 
         writeToTextArea("" + newUser.Name + " " + userAction + " with " + userWeapon);
-        
-        if (currentMonsterHealth <= 0)
-        {
+
+        if (currentMonsterHealth <= 0) {
             newUser.EXP = newUser.EXP + chosenMonster.EXP;
             alert(newUser.EXP); //alerts current exp
-            while (newUser.EXP >= newUser.MaxEXP)
-            {
+            while (newUser.EXP >= newUser.MaxEXP) {
                 newUser.Level = newUser.Level + 1; //increase level by one
                 newUser.MaxHealth = newUser.MaxHealth + 10 * newUser.Level;
                 newUser.Health = newUser.MaxHealth;
@@ -150,3 +166,4 @@ function spawnMonster() {
 //writeToTextArea("Your Current level is: " + newUser.Name);
 
 //}
+
