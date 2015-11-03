@@ -9,11 +9,10 @@ var actionArray = ["attack", "run", "talk"];
 var keywordArray = ["inventory", "status", "enemy", "health"];
 var userAction = "";
 var userCheckKeyword = "";
-function actor(Name, Health, Level, status){ 
+function actor(Name, Health, Level){ 
 	this.Name = Name;
 	this.Health = Health;
 	this.Level = Level;
-	this.status = none;
 }
 
 
