@@ -1,3 +1,4 @@
+// JavaScript source code
 var userWeapon = "";
 var chosenMonster = "";
 var count = 0;
@@ -8,26 +9,36 @@ var actionArray = [
 { Name: "talk", DamageMulti: 0.8 }
 ];
 
+//stores all the directions the user can take 
+var directions = [
+    { name: "north", XAxis: 0, YAxis: 1 },
+    { name: "east", XAxis: 1, YAxis: 0 },
+    { name: "south", XAxis: 0, YAxis: -1 },
+    { name: "west", XAxis: -1, YAxis: 0 },
+]
+
 var keywordArray = ["inventory", "status", "enemy", "health"];
 var userAction = "";
 var userCheckKeyword = "";
 
-function actor(Name, Health, MaxHealth, Level, EXP, MaxEXP) {
+function actor(Name, Health, MaxHealth, Level, EXP, MaxEXP, XAxis, YAxis) {
     this.Name = Name;
     this.Health = Health;
     this.MaxHealth = MaxHealth;
     this.Level = Level;
     this.EXP = EXP;
     this.MaxEXP = EXP;
+    this.XAxis = XAxis;
+    this.YAxis = YAxis
 }
 
 
-var newUser = new actor("you", 200, 200, 1, 0, 20);
+var newUser = new actor("you", 200, 200, 1, 0, 20, 0, 0);
 var monsters = [
-    new actor("skeleton", 40, 40, 1, 15, 15),
-    new actor("wolf", 60, 60, 1, 20, 20),
-    new actor("highwayman", 200, 200, 3, 40, 40),
-    new actor("hobb", 120, 120, 2, 30, 30)
+    new actor("skeleton", 40, 40, 1, 15, 15, 0, 0),
+    new actor("wolf", 60, 60, 1, 20, 20, 0, 0),
+    new actor("highwayman", 200, 200, 3, 40, 40, 0, 0),
+    new actor("hobb", 120, 120, 2, 30, 30, 0, 0)
 ];
 
 function prefix(Name, DamageMod) {
@@ -125,24 +136,52 @@ function action() {
                 }
             }
         }
+        // might want to move this text parser somewhere else as i dont know where to put it
+
+        for (var i = 0; i < strArray.length; i++) // this is the text parser for going around the map
+        {
+            if (strArray[i] == "go") {
+                for (var i = 0; i < strArray.length; i++) {
+                    for (var j = 0; j < directions.length; j++) {
+                        if (strArray[i] == directions[j].name) {
+                            newUser.YAxis = newUser.YAxis + directions[j].YAxis; //increase or decreases the y axis of the user's character depending on the direction they are going
+                            newUser.XAxis = newUser.XAxis + directions[j].XAxis; //increase or decreases the x axis of the user's character depending on the direction they are going
+                            if (newUser.YAxis > Math.floor(Math.random() * 15) + 10 || newUser.YAxis < Math.floor(Math.random() * -15) - 10) //sets the boundaries of the for the y axis. The range is from 10 to 15 or 10 to 25???
+                            {
+                                writeToTextArea("You have left the (whatever place we are setting the game on)")
+                            }
+                            else if (newUser.XAxis > Math.floor(Math.random() * 15) + 10 || newUser.XAxis < Math.floor(Math.random() * -15) - 10) //sets the boundaries of the for the x axis. The range is from 10 to 15 or 10 to 25???
+                            {
+                                writeToTextArea("You have left the (whatever place we are setting the game on)")
+                            }
+                            else {
+                                writeToTextArea("You went " + directions[j].name);
+                                alert(newUser.YAxis + "," + newUser.XAxis)
+                                //document.getElementById("input").value = "";
+
+                            }
+                        }
+                    }
+                }
+            }
+        }
 
         writeToTextArea("" + newUser.Name + " " + userAction + " with " + userWeapon);
 
         if (currentMonsterHealth <= 0) {
-            newUser.EXP = newUser.EXP + chosenMonster.EXP;
-            alert(newUser.EXP); //alerts current exp
+            newUser.EXP = newUser.EXP + chosenMonster.EXP; //adds the monster's exp to the user's current EXP
             while (newUser.EXP >= newUser.MaxEXP) {
                 newUser.Level = newUser.Level + 1; //increase level by one
-                newUser.MaxHealth = newUser.MaxHealth + 10 * newUser.Level;
-                newUser.Health = newUser.MaxHealth;
+                newUser.MaxHealth = newUser.MaxHealth + 10 * newUser.Level; //increases user's max health by 10 * the user's current level
+                newUser.Health = newUser.MaxHealth; //current health fills back up after levelling up
                 //newUser.DMG =  Math.round((newUser.DMG + 2 + Math.floor(Math.random() * 3) + 1) * 1.02);
-                newUser.EXP = newUser.EXP - newUser.MaxEXP;
-                newUser.MaxEXP = newUser.MaxEXP + Math.round((10 * newUser.Level) / 1.1);
-                writeToTextArea("You leveled up to LVL: " + newUser.Level + "\nHealth is now " + newUser.MaxHealth);
+                newUser.EXP = newUser.EXP - newUser.MaxEXP; // used so that the loop will keep looping until newUser.EXP is lesser than newUser.MaxEXP
+                newUser.MaxEXP = newUser.MaxEXP + 10 * newUser.Level;
+                writeToTextArea("You leveled up to LVL: " + newUser.Level + "\nHealth is now: " + newUser.MaxHealth + "\nNext amount of EXP needed to level up is: " + newUser.MaxEXP);
 
             }
-            alert(newUser.MaxEXP);//alerts max exp
-            spawnMonster();
+            writeToTextArea("You gained " + chosenMonster.EXP + " EXP")
+            spawnMonster(); // creates another monster to fight against
             count = 0;
         }
 
@@ -166,4 +205,3 @@ function spawnMonster() {
 //writeToTextArea("Your Current level is: " + newUser.Name);
 
 //}
-
