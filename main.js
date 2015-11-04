@@ -1,8 +1,9 @@
 // JavaScript source code
- var userWeapon = "";
+var userWeapon = "";
 var chosenMonster = "";
 var count = 0;
-var monstersKilled = []; 
+var monstersKilled = [];
+
 var actionArray = [
 { Name: "attack", DamageMulti: 1.2 },
 { Name: "Slash", DamageMulti: 1.1 },
@@ -21,25 +22,28 @@ var keywordArray = ["inventory", "status", "enemy", "health"];
 var userAction = "";
 var userCheckKeyword = "";
 
-function actor(Name, Health, MaxHealth, Level, EXP, MaxEXP, XAxis, YAxis) {
+function coOrdinates(Xaxis, Yaxis) {
+    this.Xaxis = Xaxis;
+    this.Yaxis = Yaxis;
+}
+
+
+function actor(Name, Health, MaxHealth, Level, EXP, MaxEXP, CoOrdinates) {
     this.Name = Name;
     this.Health = Health;
     this.MaxHealth = MaxHealth;
     this.Level = Level;
     this.EXP = EXP;
-    this.MaxEXP = MaxEXP;
-    this.XAxis = XAxis;
-    this.YAxis = YAxis
+    this.MaxEXP = EXP;
+    this.CoOrdinates = new coOrdinates(0,0);
 }
 
-
-var newUser = new actor("you", 200, 200, 1, 0, 20, 0, 0);
-
+var newUser = new actor("you", 200, 200, 1, 0, 20, coOrdinates(0,0));
 var monsters = [
-    new actor("skeleton", 40, 40, 1, 15, 15, 0, 0),
-    new actor("wolf", 60, 60, 1, 20, 20, 0, 0),
-    new actor("highwayman", 200, 200, 3, 40, 40, 0, 0),
-    new actor("hobb", 120, 120, 2, 30, 30, 0, 0)
+    new actor("skeleton", 40, 40, 1, 15, 15, 0),
+    new actor("wolf", 60, 60, 1, 20, 20, 0),
+    new actor("highwayman", 200, 200, 3, 40, 40, 0),
+    new actor("hobb", 120, 120, 2, 30, 30, 0)
 ];
 
 function prefix(Name, DamageMod) {
@@ -57,7 +61,7 @@ var weaponPrefix = [
 function weapons(Name, Damage, Prefix) {
     this.Name = Name;
     this.Damage = Damage;
-    this.Prefix = weaponPrefix[0];
+    this.Prefix = new prefix("devNULL", 1);
 }
 
 var weapon = [
@@ -68,6 +72,7 @@ var weapon = [
 ];
 
 
+
 function start() {
     writeToTextArea("Welcome to Our Text Based Adventure Game!");
     spawnMonster();
@@ -75,13 +80,12 @@ function start() {
 
 
 function action() {
-
     var userInput = document.getElementById("userInput").value.toLowerCase();
     var strArray = userInput.split(" ");
     if (count == 0) {
         currentMonsterHealth = chosenMonster.Health;
         count = 1;
-    } else{
+    } else {
 
         for (var i = 0; i < strArray.length; i++) {
             for (var j = 0; j < weapon.length; j++) {
@@ -96,11 +100,12 @@ function action() {
             for (var j = 0; j < actionArray.length; j++) {
                 if (strArray[i] == actionArray[j].Name) {
                     userAction = strArray[i];
-                    userActionDamage = actionArray[j].DamageMulti;
-                    
+                    userActionDamage = actionArray[j].DamageMulti
+                    alert(currentMonsterHealth);
                     currentMonsterHealth = currentMonsterHealth - userWeaponDamage * userActionDamage;
-                   alert(currentMonsterHealth);
-				    writeToTextArea("" + newUser.Name + " " + userAction + " with " + userWeapon);
+                    alert(currentMonsterHealth);
+                    writeToTextArea("" + newUser.Name + " " + userAction + " with " + userWeapon);
+
                 }
             }
         }
@@ -146,19 +151,19 @@ function action() {
                 for (var i = 0; i < strArray.length; i++) {
                     for (var j = 0; j < directions.length; j++) {
                         if (strArray[i] == directions[j].name) {
-                            newUser.YAxis = newUser.YAxis + directions[j].YAxis; //increase or decreases the y axis of the user's character depending on the direction they are going
-                            newUser.XAxis = newUser.XAxis + directions[j].XAxis; //increase or decreases the x axis of the user's character depending on the direction they are going
-                            if (newUser.YAxis > Math.floor(Math.random() * 15) + 10 || newUser.YAxis < Math.floor(Math.random() * -15) - 10) //sets the boundaries of the for the y axis. The range is from 10 to 15 or 10 to 25???
+                            newUser.CoOrdinates.Yaxis = newUser.CoOrdinates.Yaxis + directions[j].YAxis; //increase or decreases the y axis of the user's character depending on the direction they are going
+                            newUser.CoOrdinates.Xaxis = newUser.CoOrdinates.Xaxis + directions[j].XAxis; //increase or decreases the x axis of the user's character depending on the direction they are going
+                            if (newUser.CoOrdinates.Yaxis > Math.floor(Math.random() * 15) + 10 || newUser.CoOrdinates.YAxis < Math.floor(Math.random() * -15) - 10) //sets the boundaries of the for the y axis. The range is from 10 to 15 or 10 to 25???
                             {
                                 writeToTextArea("You have left the (whatever place we are setting the game on)")
                             }
-                            else if (newUser.XAxis > Math.floor(Math.random() * 15) + 10 || newUser.XAxis < Math.floor(Math.random() * -15) - 10) //sets the boundaries of the for the x axis. The range is from 10 to 15 or 10 to 25???
+                            else if (newUser.CoOrdinates.XAxis > Math.floor(Math.random() * 15) + 10 || newUser.CoOrdinates.XAxis < Math.floor(Math.random() * -15) - 10) //sets the boundaries of the for the x axis. The range is from 10 to 15 or 10 to 25???
                             {
                                 writeToTextArea("You have left the (whatever place we are setting the game on)")
                             }
                             else {
                                 writeToTextArea("You went " + directions[j].name);
-                                alert(newUser.YAxis + "," + newUser.XAxis)
+                                alert(newUser.CoOrdinates.Yaxis + "," + newUser.CoOrdinates.Xaxis)
                                 //document.getElementById("input").value = "";
 
                             }
@@ -169,9 +174,8 @@ function action() {
         }
 
        
-
         if (currentMonsterHealth <= 0) {
-			monstersKilled.push(chosenMonster.Name);
+            monstersKilled.push(chosenMonster.Name);
             newUser.EXP = newUser.EXP + chosenMonster.EXP; //adds the monster's exp to the user's current EXP
             while (newUser.EXP >= newUser.MaxEXP) {
                 newUser.Level = newUser.Level + 1; //increase level by one
@@ -203,18 +207,14 @@ function spawnMonster() {
 
 }
 
-function userStatus()
-{
-	writeToTextArea("You have chosen to Check Status");
-	writeToTextArea("Your Current level is: " + newUser.Level);
-	
-	for(var i = 0; i < monstersKilled.length; i++)
-	{
-			writeToTextArea("Monster killed: " + monstersKilled[i]);
-			
-	}
-		
+function userStatus() {
+    writeToTextArea("You have chosen to Check Status");
+    writeToTextArea("Your Current level is: " + newUser.Level);
+
+    for (var i = 0; i < monstersKilled.length; i++) {
+        writeToTextArea("Monster killed: " + monstersKilled[i]);
+
+    }
+
 
 }
-
-
