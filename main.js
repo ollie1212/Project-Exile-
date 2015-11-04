@@ -34,7 +34,7 @@ function actor(Name, Health, MaxHealth, Level, EXP, MaxEXP, CoOrdinates) {
     this.MaxHealth = MaxHealth;
     this.Level = Level;
     this.EXP = EXP;
-    this.MaxEXP = EXP;
+    this.MaxEXP = MaxEXP;
     this.CoOrdinates = new coOrdinates(0,0);
 }
 
