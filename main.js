@@ -28,7 +28,7 @@ function coOrdinates(Xaxis, Yaxis) {
 }
 
 
-function actor(Name, Health, MaxHealth, Level, EXP, MaxEXP, CoOrdinates) {
+function actor(Name, Health, MaxHealth, Level, EXP, MaxEXP, CoOrdinates, MonDamage) {
     this.Name = Name;
     this.Health = Health;
     this.MaxHealth = MaxHealth;
@@ -36,14 +36,15 @@ function actor(Name, Health, MaxHealth, Level, EXP, MaxEXP, CoOrdinates) {
     this.EXP = EXP;
     this.MaxEXP = MaxEXP;
     this.CoOrdinates = new coOrdinates(0,0);
+	this.MonDamage = MonDamage;
 }
 
-var newUser = new actor("you", 200, 200, 1, 0, 20, coOrdinates(0,0));
+var newUser = new actor("you", 200, 200, 1, 0, 20, coOrdinates(0,0), 0);
 var monsters = [
-    new actor("skeleton", 40, 40, 1, 15, 15, 0),
-    new actor("wolf", 60, 60, 1, 20, 20, 0),
-    new actor("highwayman", 200, 200, 3, 40, 40, 0),
-    new actor("hobb", 120, 120, 2, 30, 30, 0)
+    new actor("skeleton", 40, 40, 1, 15, 15, 0, 5),
+    new actor("wolf", 60, 60, 1, 20, 20, 0, 15),
+    new actor("highwayman", 200, 200, 3, 40, 40, 0, 40),
+    new actor("hobb", 120, 120, 2, 30, 30, 0, 30)
 ];
 
 function prefix(Name, DamageMod) {
@@ -100,17 +101,29 @@ function action() {
             for (var j = 0; j < actionArray.length; j++) {
                 if (strArray[i] == actionArray[j].Name) {
                     userAction = strArray[i];
-                    userActionDamage = actionArray[j].DamageMulti
-                    alert(currentMonsterHealth);
-                    currentMonsterHealth = currentMonsterHealth - userWeaponDamage * userActionDamage;
-                    alert(currentMonsterHealth);
-                    writeToTextArea("" + newUser.Name + " " + userAction + " with " + userWeapon);
-
+                    userActionDamage = actionArray[j].DamageMulti;
+					currentMonsterHealth = currentMonsterHealth - userWeaponDamage * userActionDamage;
+                    writeToTextArea("" + newUser.Name + " " + userAction + " " + chosenMonster.Name + " with " + userWeapon + " Dealing " + userWeaponDamage * userActionDamage);
+					writeToTextArea(chosenMonster.Name + " has " + currentMonsterHealth + " Health remaining");
+					
                 }
             }
         }
-
-        for (var i = 0; i < strArray.length; i++) {
+		
+	
+	
+	
+		if(newUser.Health >= 0 && currentMonsterHealth >= 0)
+		{
+			newUser.Health = newUser.Health - chosenMonster.MonDamage;
+			writeToTextArea(chosenMonster.Name + " has Attacked you! Dealing: " + chosenMonster.MonDamage + " Damage" + " You have: " + newUser.Health + " Health remaining");
+		}else
+		{
+			writeToTextArea("You Have Been Defeated!");
+		}	
+	
+        
+		for (var i = 0; i < strArray.length; i++) {
             if (strArray[i] == "check") {
                 for (var i = 0; i < strArray.length; i++) {
                     for (var j = 0; j < keywordArray.length; j++) {
@@ -143,7 +156,10 @@ function action() {
                 }
             }
         }
-        // might want to move this text parser somewhere else as i dont know where to put it
+		
+		
+        
+		// might want to move this text parser somewhere else as i dont know where to put it
 
         for (var i = 0; i < strArray.length; i++) // this is the text parser for going around the map
         {
