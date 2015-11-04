@@ -27,7 +27,7 @@ function actor(Name, Health, MaxHealth, Level, EXP, MaxEXP, XAxis, YAxis) {
     this.MaxHealth = MaxHealth;
     this.Level = Level;
     this.EXP = EXP;
-    this.MaxEXP = EXP;
+    this.MaxEXP = MaxEXP;
     this.XAxis = XAxis;
     this.YAxis = YAxis
 }
@@ -170,6 +170,7 @@ function action() {
 
         if (currentMonsterHealth <= 0) {
             newUser.EXP = newUser.EXP + chosenMonster.EXP; //adds the monster's exp to the user's current EXP
+            writeToTextArea("You gained " + chosenMonster.EXP + " EXP")
             while (newUser.EXP >= newUser.MaxEXP) {
                 newUser.Level = newUser.Level + 1; //increase level by one
                 newUser.MaxHealth = newUser.MaxHealth + 10 * newUser.Level; //increases user's max health by 10 * the user's current level
