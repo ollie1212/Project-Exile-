@@ -1,8 +1,8 @@
 // JavaScript source code
-var userWeapon = "";
+ var userWeapon = "";
 var chosenMonster = "";
 var count = 0;
-
+var monstersKilled = []; 
 var actionArray = [
 { Name: "attack", DamageMulti: 1.2 },
 { Name: "Slash", DamageMulti: 1.1 },
@@ -34,6 +34,7 @@ function actor(Name, Health, MaxHealth, Level, EXP, MaxEXP, XAxis, YAxis) {
 
 
 var newUser = new actor("you", 200, 200, 1, 0, 20, 0, 0);
+
 var monsters = [
     new actor("skeleton", 40, 40, 1, 15, 15, 0, 0),
     new actor("wolf", 60, 60, 1, 20, 20, 0, 0),
@@ -80,7 +81,7 @@ function action() {
     if (count == 0) {
         currentMonsterHealth = chosenMonster.Health;
         count = 1;
-    } else {
+    } else{
 
         for (var i = 0; i < strArray.length; i++) {
             for (var j = 0; j < weapon.length; j++) {
@@ -95,10 +96,11 @@ function action() {
             for (var j = 0; j < actionArray.length; j++) {
                 if (strArray[i] == actionArray[j].Name) {
                     userAction = strArray[i];
-                    userActionDamage = actionArray[j].DamageMulti
-                    alert(currentMonsterHealth);
+                    userActionDamage = actionArray[j].DamageMulti;
+                    
                     currentMonsterHealth = currentMonsterHealth - userWeaponDamage * userActionDamage;
-                    alert(currentMonsterHealth);
+                   alert(currentMonsterHealth);
+				    writeToTextArea("" + newUser.Name + " " + userAction + " with " + userWeapon);
                 }
             }
         }
@@ -166,11 +168,11 @@ function action() {
             }
         }
 
-        writeToTextArea("" + newUser.Name + " " + userAction + " with " + userWeapon);
+       
 
         if (currentMonsterHealth <= 0) {
+			monstersKilled.push(chosenMonster.Name);
             newUser.EXP = newUser.EXP + chosenMonster.EXP; //adds the monster's exp to the user's current EXP
-            writeToTextArea("You gained " + chosenMonster.EXP + " EXP")
             while (newUser.EXP >= newUser.MaxEXP) {
                 newUser.Level = newUser.Level + 1; //increase level by one
                 newUser.MaxHealth = newUser.MaxHealth + 10 * newUser.Level; //increases user's max health by 10 * the user's current level
@@ -201,8 +203,18 @@ function spawnMonster() {
 
 }
 
-//function userStatus()
-//{
-//writeToTextArea("Your Current level is: " + newUser.Name);
+function userStatus()
+{
+	writeToTextArea("You have chosen to Check Status");
+	writeToTextArea("Your Current level is: " + newUser.Level);
+	
+	for(var i = 0; i < monstersKilled.length; i++)
+	{
+			writeToTextArea("Monster killed: " + monstersKilled[i]);
+			
+	}
+		
 
-//}
+}
+
+
