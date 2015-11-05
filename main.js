@@ -134,7 +134,7 @@ function action()
                             newUser.Health = newUser.MaxHealth
                         }
                         items[j].Inventory--;
-                        writeToTextArea("You have used " + items[j].Name + "\n" + newUser.Name + " have gained " + items[j].Value + " HP\nYour current health is " + newUser.Health);
+                        writeToTextArea("Your current health is " + newUser.Health + " " + newUser.Name + " have gained " + items[j].Value + "HP" + "\n" + "You have used " + items[j].Name );
                     }
                 }
             }
@@ -148,7 +148,7 @@ function action()
             newUser.Health = newUser.Health - chosenMonster.MonDamage;
             writeToTextArea(chosenMonster.Name + " has Attacked you! Dealing: " + chosenMonster.MonDamage + " Damage" + " You have: " + newUser.Health + " Health remaining");
         }
-        if (newUser.Health < 1)
+        if (newUser.Health <= 0)
         {
             writeToTextArea("You Have Been Defeated!");
         }
@@ -265,4 +265,19 @@ function userStatus()
     }
 
 
+}
+
+function userInventory()
+{
+	
+
+	  for (var i = 0; i < items.length; i++) {
+		  if(items[i].Inventory > 0 )
+		  {
+			writeToTextArea("Item Name: " + items[i].Name + " Quantity: " + items[i].Inventory);
+		  }
+    }
+		writeToTextArea("Your Inventory: ");
+	
+	
 }
