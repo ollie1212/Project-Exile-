@@ -4,6 +4,7 @@ var chosenMonster = "";
 var count = 0;
 var monstersKilled = [];
 var directionFace = "forward";
+
 var actionArray = [
 { Name: "attack", DamageMulti: 1.2 },
 { Name: "Slash", DamageMulti: 1.1 },
@@ -357,6 +358,31 @@ function action()
 								directions[3].name = "left"
 							}
 							alert (directionFace);
+							
+							for (var i = 0; i < strArray.length; i++) // loop to find the key word Down! or up! 
+							{
+								if (strArray[i] == "down") 
+								{
+									newUser.CoOrdinates.Xaxis = 0; // reset coOrdinates to 0,0 as its a new area 
+									newUser.CoOrdinates.Yaxis = 0;
+								}else if(strArray[i] == "up" && newUser.CoOrdinates.Xaxis == 5 && newUser.CoOrdinates.Yaxis == 5) // if the user navigates to this spot and inputs up, they will return to original coOrdinates.
+								{																								//allowing them to carry on with the game etc.
+									newUser.coOrdinates.Xaxis = 6;
+									newUser.CoOrdinates.Yaxis = 2;
+								}
+							}
+							if(newUser.CoOrdinates.Xaxis >= 3 && newUser.CoOrdinates.Yaxis >= 2 && newUser.CoOrdinates.Xaxis <= 5 && newUser.CoOrdinates.Yaxis <= 5) // just used as an example. i have suggested that within these coOrdinates the user can see the cave
+							{
+								writeToTextArea("If you move to area 6,2 you will find a Forgotten Cave! or you can turn around and explore a different area!"); // i think we should tell the user where they are etc. allowing them to navigate to areas
+								
+							}
+							
+							if(newUser.CoOrdinates.Xaxis == 6 && newUser.CoOrdinates.Yaxis == 2) //this works and we can use this as a base to find locations.
+							{
+								
+								writeToTextArea("You have discovered The Forgotton Cave! move DOWN to explore!");
+							}
+					
 						}
                         }
 						
