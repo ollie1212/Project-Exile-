@@ -105,6 +105,38 @@ function action()
                 }
             }
         }
+        
+        //LEVEL UP DAMAGE MULTIPLIER
+		
+		if (newUser.Level > 1)					
+		{
+			var levelUpDamage = 1.05;
+			userWeaponDamage = userWeaponDamage * levelUpDamage;
+			//alert(userWeaponDamage);
+			
+		}
+		else if (newUser.Level > 4)
+		{
+			levelUpDamage = 1.1;
+			userWeaponDamage = userWeaponDamage * levelUpDamage;
+			//alert(userWeaponDamage);
+		}
+		else if (newUser.Level > 9)
+		{
+			levelUpDamage = 1.15;
+			userWeaponDamage = userWeaponDamage * levelUpDamage;
+		}
+		else if (newUser.Level > 14)
+		{
+			levelUpDamage = 1.2;
+			userWeaponDamage = userWeaponDamage * levelUpDamage;
+			
+		}
+		
+		//END LEVEL UP DAMAGE MULTIPLIER
+        
+        
+        
         //attack text parser
         for (var i = 0; i < strArray.length; i++) {
             for (var j = 0; j < actionArray.length; j++) {
