@@ -3,7 +3,7 @@ var userWeapon = "";
 var chosenMonster = "";
 var count = 0;
 var monstersKilled = [];
-
+var directionFace = "forward";
 var actionArray = [
 { Name: "attack", DamageMulti: 1.2 },
 { Name: "Slash", DamageMulti: 1.1 },
@@ -12,10 +12,10 @@ var actionArray = [
 
 //stores all the directions the user can take 
 var directions = [
-    { name: "north", XAxis: 0, YAxis: 1 },
-    { name: "east", XAxis: 1, YAxis: 0 },
-    { name: "south", XAxis: 0, YAxis: -1 },
-    { name: "west", XAxis: -1, YAxis: 0 },
+    { name: "forward", XAxis: 0, YAxis: 1 },
+    { name: "right", XAxis: 1, YAxis: 0 },
+    { name: "backward", XAxis: 0, YAxis: -1 },
+    { name: "left", XAxis: -1, YAxis: 0 },
 ]
 
 var keywordArray = ["inventory", "status", "enemy", "health"];
@@ -105,38 +105,6 @@ function action()
                 }
             }
         }
-        
-        //LEVEL UP DAMAGE MULTIPLIER
-		
-		if (newUser.Level > 1)					
-		{
-			var levelUpDamage = 1.05;
-			userWeaponDamage = userWeaponDamage * levelUpDamage;
-			//alert(userWeaponDamage);
-			
-		}
-		else if (newUser.Level > 4)
-		{
-			levelUpDamage = 1.1;
-			userWeaponDamage = userWeaponDamage * levelUpDamage;
-			//alert(userWeaponDamage);
-		}
-		else if (newUser.Level > 9)
-		{
-			levelUpDamage = 1.15;
-			userWeaponDamage = userWeaponDamage * levelUpDamage;
-		}
-		else if (newUser.Level > 14)
-		{
-			levelUpDamage = 1.2;
-			userWeaponDamage = userWeaponDamage * levelUpDamage;
-			
-		}
-		
-		//END LEVEL UP DAMAGE MULTIPLIER
-        
-        
-        
         //attack text parser
         for (var i = 0; i < strArray.length; i++) {
             for (var j = 0; j < actionArray.length; j++) {
@@ -206,7 +174,7 @@ function action()
                                     break;
 
                                 case "enemy":
-                                    enemy();
+                                    enemyInfo();
                                     break;
 
                                 case "health":
@@ -223,15 +191,21 @@ function action()
 
 
         // might want to move this text parser somewhere else as i dont know where to put it
-
+		var countTemp = 0;
         for (var i = 0; i < strArray.length; i++) // this is the text parser for going around the map
         {
             if (strArray[i] == "go") {
                 for (var i = 0; i < strArray.length; i++) {
-                    for (var j = 0; j < directions.length; j++) {
+                    for (var j = 0; j < directions.length; j++) 
+					{
+						if(countTemp == 0)
+						{
                         if (strArray[i] == directions[j].name) {
+							
                             newUser.CoOrdinates.Yaxis = newUser.CoOrdinates.Yaxis + directions[j].YAxis; //increase or decreases the y axis of the user's character depending on the direction they are going
                             newUser.CoOrdinates.Xaxis = newUser.CoOrdinates.Xaxis + directions[j].XAxis; //increase or decreases the x axis of the user's character depending on the direction they are going
+							countTemp = 1;
+							//alert (newUser.CoOrdinates.Xaxis + " " + newUser.CoOrdinates.Yaxis)
                             if (newUser.CoOrdinates.Yaxis > Math.floor(Math.random() * 15) + 10 || newUser.CoOrdinates.YAxis < Math.floor(Math.random() * -15) - 10) //sets the boundaries of the for the y axis. The range is from 10 to 15 or 10 to 25???
                             {
                                 writeToTextArea("You have left the (whatever place we are setting the game on)")
@@ -242,11 +216,150 @@ function action()
                             }
                             else {
                                 writeToTextArea("You went " + directions[j].name);
-                                alert(newUser.CoOrdinates.Yaxis + "," + newUser.CoOrdinates.Xaxis)
+                                alert(newUser.CoOrdinates.Xaxis + "," + newUser.CoOrdinates.Yaxis)
                                 //document.getElementById("input").value = "";
 
                             }
+							//forward
+							if (directions[j].name == "forward" && directionFace == "forward")
+							{
+								directionFace = "forward"
+								directions[0].name = "forward"
+								directions[1].name = "right"
+								directions[2].name = "backward"
+								directions[3].name = "left"
+							}
+							if (directions[j].name == "left" && directionFace == "forward")
+							{
+								directionFace = "left"
+								directions[0].name = "right"
+								directions[1].name = "backward"
+								directions[2].name = "left"
+						    	directions[3].name = "forward"
+							}
+							if (directions[j].name == "right" && directionFace == "forward")
+							{
+								directionFace = "right"
+								directions[0].name = "left"
+								directions[1].name = "forward"
+								directions[2].name = "right"
+								directions[3].name = "backward"
+							}
+							if (directions[j].name == "backward" && directionFace == "forward")
+							{
+								directionFace = "backward"
+								directions[0].name = "backward"
+								directions[1].name = "left"
+								directions[2].name = "forward"
+								directions[3].name = "right"
+							}
+							
+							//right
+							if (directions[j].name == "forward" && directionFace == "right")
+							{
+								directionFace = "right"
+								directions[0].name = "left"
+								directions[1].name = "forward"
+								directions[2].name = "right"
+								directions[3].name = "backward"
+							}
+							if (directions[j].name == "left" && directionFace == "right")
+							{
+								directionFace = "forward"
+								directions[0].name = "forward"
+								directions[1].name = "right"
+								directions[2].name = "backward"
+								directions[3].name = "left"
+							}
+							if (directions[j].name == "right" && directionFace == "right")
+							{
+								directionFace = "backward"
+								directions[0].name = "backward"
+								directions[1].name = "left"
+								directions[2].name = "forward"
+								directions[3].name = "right"
+							}
+							if (directions[j].name == "backward" && directionFace == "right")
+							{
+								directionFace = "left"
+								directions[0].name = "right"
+								directions[1].name = "backward"
+								directions[2].name = "left"
+								directions[3].name = "forward"
+							}
+							
+							//left
+							if (directions[j].name == "forward" && directionFace == "left")
+							{
+								directionFace = "left"
+								directions[0].name = "left"
+								directions[1].name = "forward"
+								directions[2].name = "right"
+								directions[3].name = "backward"
+							}
+							if (directions[j].name == "left" && directionFace == "left")
+							{
+								directionFace = "backward"
+								directions[0].name = "backward"
+								directions[1].name = "left"
+								directions[2].name = "forward"
+								directions[3].name = "right"
+							}
+							if (directions[j].name == "right" && directionFace == "left")
+							{
+								directionFace = "forward"
+								directions[0].name = "forward"
+								directions[1].name = "right"
+								directions[2].name = "backward"
+								directions[3].name = "left"
+							}
+							if (directions[j].name == "backward" && directionFace == "left")
+							{
+								directionFace = "right"
+								directions[0].name = "left"
+								directions[1].name = "forward"
+								directions[2].name = "right"
+								directions[3].name = "backward"
+							}
+							
+							// back
+							
+							if (directions[j].name == "forward" && directionFace == "backward")
+							{
+								directionFace = "backward"
+								directions[0].name = "backward"
+								directions[1].name = "left"
+								directions[2].name = "forward"
+								directions[3].name = "right"
+							}
+							if (directions[j].name == "left" && directionFace == "backward")
+							{
+								directionFace = "right"
+								directions[0].name = "backward"
+								directions[1].name = "right"
+								directions[2].name = "left"
+								directions[3].name = "backward"
+							}
+							if (directions[j].name == "right" && directionFace == "backward")
+							{
+								directionFace = "left"
+								directions[0].name = "right"
+								directions[1].name = "backward"
+								directions[2].name = "left"
+								directions[3].name = "forward"
+							}
+							if (directions[j].name == "backward" && directionFace == "backward")
+							{
+								directionFace = "forward"
+								directions[0].name = "forward"
+								directions[1].name = "right"
+								directions[2].name = "backward"
+								directions[3].name = "left"
+							}
+							alert (directionFace);
+						}
                         }
+						
                     }
                 }
             }
@@ -310,6 +423,15 @@ function userInventory()
 		  }
     }
 		writeToTextArea("Your Inventory: ");
+	
+	
+}
+
+function enemyInfo()
+{
+	writeToTextArea("You are currently fighitng: " + chosenMonster.Name);
+	writeToTextArea(chosenMonster.Name + " Spawned with " + chosenMonster.Health + "HP" + " and now has: " + currentMonsterHealth + "HP remaining " + " Keep fighting!");
+	writeToTextArea("Enemy Information: ");
 	
 	
 }
