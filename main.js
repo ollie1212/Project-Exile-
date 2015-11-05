@@ -84,23 +84,17 @@ function start() {
 }
 
 
-function action()
-{
+function action() {
     var userInput = document.getElementById("userInput").value.toLowerCase();
     var strArray = userInput.split(" ");
-    if (count == 0)
-    {
+    if (count == 0) {
         currentMonsterHealth = chosenMonster.Health;
         count = 1;
-    } else
-    {
+    } else {
         //weapon text parser
-        for (var i = 0; i < strArray.length; i++)
-        {
-            for (var j = 0; j < weapon.length; j++)
-            {
-                if (strArray[i] == weapon[j].Name)
-                {
+        for (var i = 0; i < strArray.length; i++) {
+            for (var j = 0; j < weapon.length; j++) {
+                if (strArray[i] == weapon[j].Name) {
                     userWeapon = strArray[i];
                     userWeaponDamage = weapon[j].Damage;
                 }
@@ -112,7 +106,7 @@ function action()
                 if (strArray[i] == actionArray[j].Name) {
                     userAction = strArray[i];
                     userActionDamage = actionArray[j].DamageMulti;
-                    userOverallDamage = userWeaponDamage * userActionDamage; // 
+                    userOverallDamage = userWeaponDamage * userActionDamage;  
                     currentMonsterHealth = currentMonsterHealth - userOverallDamage;
                     writeToTextArea("" + newUser.Name + " " + userAction + " " + chosenMonster.Name + " with " + userWeapon + " Dealing " + userOverallDamage);
                     writeToTextArea(chosenMonster.Name + " has " + currentMonsterHealth + " Health remaining");
@@ -127,15 +121,13 @@ function action()
                     if (items[j].Inventory == 0) {
                         writeToTextArea(newUser.Name + " don't have " + items[j].Name + "s in your inventory");
                     }
-                    else
-                    {
+                    else {
                         newUser.Health = newUser.Health + items[j].Value;
-                        if (newUser.Health > newUser.MaxHealth)
-                        {
+                        if (newUser.Health > newUser.MaxHealth) {
                             newUser.Health = newUser.MaxHealth
                         }
                         items[j].Inventory--;
-                        writeToTextArea("Your current health is " + newUser.Health + " " + newUser.Name + " have gained " + items[j].Value + "HP" + "\n" + "You have used " + items[j].Name );
+                        writeToTextArea("Your current health is " + newUser.Health + " " + newUser.Name + " have gained " + items[j].Value + "HP" + "\n" + "You have used " + items[j].Name);
                     }
                 }
             }
@@ -144,16 +136,14 @@ function action()
 
 
 
-        if (newUser.Health >= 0 && currentMonsterHealth >= 0)
-        {
+        if (newUser.Health >= 0 && currentMonsterHealth >= 0) {
             newUser.Health = newUser.Health - chosenMonster.MonDamage;
             writeToTextArea(chosenMonster.Name + " has Attacked you! Dealing: " + chosenMonster.MonDamage + " Damage" + " You have: " + newUser.Health + " Health remaining");
         }
-        if (newUser.Health <= 0)
-        {
+        if (newUser.Health <= 0) {
             writeToTextArea("You Have Been Defeated!");
         }
-        
+
 
 
         for (var i = 0; i < strArray.length; i++) {
@@ -189,203 +179,186 @@ function action()
             }
         }
 
+        for (var i = 0; i < strArray.length; i++) // loop to find the key word Down! or up! 
+        {
+            if (strArray[i] == "down")
+            {
+                newUser.CoOrdinates.Xaxis = 0; // reset coOrdinates to 0,0 as its a new area 
+                newUser.CoOrdinates.Yaxis = 0;
+                directionFace = "forward";
+            }
+            else if (strArray[i] == "up" && newUser.CoOrdinates.Xaxis == 5 && newUser.CoOrdinates.Yaxis == 5) // if the user navigates to this spot and inputs up, they will return to original coOrdinates.
+            {																								//allowing them to carry on with the game etc.
+                newUser.CoOrdinates.Xaxis = 6;
+                newUser.CoOrdinates.Yaxis = 2;
+            }
+        }
+        if (newUser.CoOrdinates.Xaxis >= 3 && newUser.CoOrdinates.Yaxis >= 2 && newUser.CoOrdinates.Xaxis <= 5 && newUser.CoOrdinates.Yaxis <= 5) // just used as an example. i have suggested that within these coOrdinates the user can see the cave
+        {
+            writeToTextArea("If you move to area 6,2 you will find a Forgotten Cave! or you can turn around and explore a different area!"); // i think we should tell the user where they are etc. allowing them to navigate to areas
+        }
 
+        if (newUser.CoOrdinates.Xaxis == 6 && newUser.CoOrdinates.Yaxis == 2) //this works and we can use this as a base to find locations.
+        {
+            writeToTextArea("You have discovered The Forgotton Cave! move DOWN to explore!");
+        }
 
         // might want to move this text parser somewhere else as i dont know where to put it
-		var countTemp = 0;
+        var countTemp = 0;
         for (var i = 0; i < strArray.length; i++) // this is the text parser for going around the map
         {
             if (strArray[i] == "go") {
                 for (var i = 0; i < strArray.length; i++) {
-                    for (var j = 0; j < directions.length; j++) 
-					{
-						if(countTemp == 0)
-						{
-                        if (strArray[i] == directions[j].name) {
-							
-                            newUser.CoOrdinates.Yaxis = newUser.CoOrdinates.Yaxis + directions[j].YAxis; //increase or decreases the y axis of the user's character depending on the direction they are going
-                            newUser.CoOrdinates.Xaxis = newUser.CoOrdinates.Xaxis + directions[j].XAxis; //increase or decreases the x axis of the user's character depending on the direction they are going
-							countTemp = 1;
-							//alert (newUser.CoOrdinates.Xaxis + " " + newUser.CoOrdinates.Yaxis)
-                            if (newUser.CoOrdinates.Yaxis > Math.floor(Math.random() * 15) + 10 || newUser.CoOrdinates.YAxis < Math.floor(Math.random() * -15) - 10) //sets the boundaries of the for the y axis. The range is from 10 to 15 or 10 to 25???
-                            {
-                                writeToTextArea("You have left the (whatever place we are setting the game on)")
-                            }
-                            else if (newUser.CoOrdinates.XAxis > Math.floor(Math.random() * 15) + 10 || newUser.CoOrdinates.XAxis < Math.floor(Math.random() * -15) - 10) //sets the boundaries of the for the x axis. The range is from 10 to 15 or 10 to 25???
-                            {
-                                writeToTextArea("You have left the (whatever place we are setting the game on)")
-                            }
-                            else {
-                                writeToTextArea("You went " + directions[j].name);
-                                alert(newUser.CoOrdinates.Xaxis + "," + newUser.CoOrdinates.Yaxis)
-                                //document.getElementById("input").value = "";
+                    for (var j = 0; j < directions.length; j++) {
+                        if (countTemp == 0) {
+                            if (strArray[i] == directions[j].name) {
+
+                                newUser.CoOrdinates.Yaxis = newUser.CoOrdinates.Yaxis + directions[j].YAxis; //increase or decreases the y axis of the user's character depending on the direction they are going
+                                newUser.CoOrdinates.Xaxis = newUser.CoOrdinates.Xaxis + directions[j].XAxis; //increase or decreases the x axis of the user's character depending on the direction they are going
+                                countTemp = 1;
+                                //alert (newUser.CoOrdinates.Xaxis + " " + newUser.CoOrdinates.Yaxis)
+                                if (newUser.CoOrdinates.Yaxis > Math.floor(Math.random() * 15) + 10 || newUser.CoOrdinates.YAxis < Math.floor(Math.random() * -15) - 10) //sets the boundaries of the for the y axis. The range is from 10 to 15 or 10 to 25???
+                                {
+                                    writeToTextArea("You have left the (whatever place we are setting the game on)")
+                                }
+                                else if (newUser.CoOrdinates.XAxis > Math.floor(Math.random() * 15) + 10 || newUser.CoOrdinates.XAxis < Math.floor(Math.random() * -15) - 10) //sets the boundaries of the for the x axis. The range is from 10 to 15 or 10 to 25???
+                                {
+                                    writeToTextArea("You have left the (whatever place we are setting the game on)")
+                                }
+                                else
+                                {
+                                    writeToTextArea("You went " + directions[j].name);
+                                    alert(newUser.CoOrdinates.Xaxis + "," + newUser.CoOrdinates.Yaxis)
+                                    //document.getElementById("input").value = "";
+                                    
+                                }
+                                //forward
+                                if (directions[j].name == "forward" && directionFace == "forward") {
+                                    directionFace = "forward"
+                                    directions[0].name = "forward"
+                                    directions[1].name = "right"
+                                    directions[2].name = "backward"
+                                    directions[3].name = "left"
+                                }
+                                if (directions[j].name == "left" && directionFace == "forward") {
+                                    directionFace = "left"
+                                    directions[0].name = "right"
+                                    directions[1].name = "backward"
+                                    directions[2].name = "left"
+                                    directions[3].name = "forward"
+                                }
+                                if (directions[j].name == "right" && directionFace == "forward") {
+                                    directionFace = "right"
+                                    directions[0].name = "left"
+                                    directions[1].name = "forward"
+                                    directions[2].name = "right"
+                                    directions[3].name = "backward"
+                                }
+                                if (directions[j].name == "backward" && directionFace == "forward") {
+                                    directionFace = "backward"
+                                    directions[0].name = "backward"
+                                    directions[1].name = "left"
+                                    directions[2].name = "forward"
+                                    directions[3].name = "right"
+                                }
+
+                                //right
+                                if (directions[j].name == "forward" && directionFace == "right") {
+                                    directionFace = "right"
+                                    directions[0].name = "left"
+                                    directions[1].name = "forward"
+                                    directions[2].name = "right"
+                                    directions[3].name = "backward"
+                                }
+                                if (directions[j].name == "left" && directionFace == "right") {
+                                    directionFace = "forward"
+                                    directions[0].name = "forward"
+                                    directions[1].name = "right"
+                                    directions[2].name = "backward"
+                                    directions[3].name = "left"
+                                }
+                                if (directions[j].name == "right" && directionFace == "right") {
+                                    directionFace = "backward"
+                                    directions[0].name = "backward"
+                                    directions[1].name = "left"
+                                    directions[2].name = "forward"
+                                    directions[3].name = "right"
+                                }
+                                if (directions[j].name == "backward" && directionFace == "right") {
+                                    directionFace = "left"
+                                    directions[0].name = "right"
+                                    directions[1].name = "backward"
+                                    directions[2].name = "left"
+                                    directions[3].name = "forward"
+                                }
+
+                                //left
+                                if (directions[j].name == "forward" && directionFace == "left") {
+                                    directionFace = "left"
+                                    directions[0].name = "left"
+                                    directions[1].name = "forward"
+                                    directions[2].name = "right"
+                                    directions[3].name = "backward"
+                                }
+                                if (directions[j].name == "left" && directionFace == "left") {
+                                    directionFace = "backward"
+                                    directions[0].name = "backward"
+                                    directions[1].name = "left"
+                                    directions[2].name = "forward"
+                                    directions[3].name = "right"
+                                }
+                                if (directions[j].name == "right" && directionFace == "left") {
+                                    directionFace = "forward"
+                                    directions[0].name = "forward"
+                                    directions[1].name = "right"
+                                    directions[2].name = "backward"
+                                    directions[3].name = "left"
+                                }
+                                if (directions[j].name == "backward" && directionFace == "left") {
+                                    directionFace = "right"
+                                    directions[0].name = "left"
+                                    directions[1].name = "forward"
+                                    directions[2].name = "right"
+                                    directions[3].name = "backward"
+                                }
+
+                                // back
+
+                                if (directions[j].name == "forward" && directionFace == "backward") {
+                                    directionFace = "backward"
+                                    directions[0].name = "backward"
+                                    directions[1].name = "left"
+                                    directions[2].name = "forward"
+                                    directions[3].name = "right"
+                                }
+                                if (directions[j].name == "left" && directionFace == "backward") {
+                                    directionFace = "right"
+                                    directions[0].name = "backward"
+                                    directions[1].name = "right"
+                                    directions[2].name = "left"
+                                    directions[3].name = "backward"
+                                }
+                                if (directions[j].name == "right" && directionFace == "backward") {
+                                    directionFace = "left"
+                                    directions[0].name = "right"
+                                    directions[1].name = "backward"
+                                    directions[2].name = "left"
+                                    directions[3].name = "forward"
+                                }
+                                if (directions[j].name == "backward" && directionFace == "backward") {
+                                    directionFace = "forward"
+                                    directions[0].name = "forward"
+                                    directions[1].name = "right"
+                                    directions[2].name = "backward"
+                                    directions[3].name = "left"
+                                }
+                                alert(directionFace);
+
+                               
 
                             }
-							//forward
-							if (directions[j].name == "forward" && directionFace == "forward")
-							{
-								directionFace = "forward"
-								directions[0].name = "forward"
-								directions[1].name = "right"
-								directions[2].name = "backward"
-								directions[3].name = "left"
-							}
-							if (directions[j].name == "left" && directionFace == "forward")
-							{
-								directionFace = "left"
-								directions[0].name = "right"
-								directions[1].name = "backward"
-								directions[2].name = "left"
-						    	directions[3].name = "forward"
-							}
-							if (directions[j].name == "right" && directionFace == "forward")
-							{
-								directionFace = "right"
-								directions[0].name = "left"
-								directions[1].name = "forward"
-								directions[2].name = "right"
-								directions[3].name = "backward"
-							}
-							if (directions[j].name == "backward" && directionFace == "forward")
-							{
-								directionFace = "backward"
-								directions[0].name = "backward"
-								directions[1].name = "left"
-								directions[2].name = "forward"
-								directions[3].name = "right"
-							}
-							
-							//right
-							if (directions[j].name == "forward" && directionFace == "right")
-							{
-								directionFace = "right"
-								directions[0].name = "left"
-								directions[1].name = "forward"
-								directions[2].name = "right"
-								directions[3].name = "backward"
-							}
-							if (directions[j].name == "left" && directionFace == "right")
-							{
-								directionFace = "forward"
-								directions[0].name = "forward"
-								directions[1].name = "right"
-								directions[2].name = "backward"
-								directions[3].name = "left"
-							}
-							if (directions[j].name == "right" && directionFace == "right")
-							{
-								directionFace = "backward"
-								directions[0].name = "backward"
-								directions[1].name = "left"
-								directions[2].name = "forward"
-								directions[3].name = "right"
-							}
-							if (directions[j].name == "backward" && directionFace == "right")
-							{
-								directionFace = "left"
-								directions[0].name = "right"
-								directions[1].name = "backward"
-								directions[2].name = "left"
-								directions[3].name = "forward"
-							}
-							
-							//left
-							if (directions[j].name == "forward" && directionFace == "left")
-							{
-								directionFace = "left"
-								directions[0].name = "left"
-								directions[1].name = "forward"
-								directions[2].name = "right"
-								directions[3].name = "backward"
-							}
-							if (directions[j].name == "left" && directionFace == "left")
-							{
-								directionFace = "backward"
-								directions[0].name = "backward"
-								directions[1].name = "left"
-								directions[2].name = "forward"
-								directions[3].name = "right"
-							}
-							if (directions[j].name == "right" && directionFace == "left")
-							{
-								directionFace = "forward"
-								directions[0].name = "forward"
-								directions[1].name = "right"
-								directions[2].name = "backward"
-								directions[3].name = "left"
-							}
-							if (directions[j].name == "backward" && directionFace == "left")
-							{
-								directionFace = "right"
-								directions[0].name = "left"
-								directions[1].name = "forward"
-								directions[2].name = "right"
-								directions[3].name = "backward"
-							}
-							
-							// back
-							
-							if (directions[j].name == "forward" && directionFace == "backward")
-							{
-								directionFace = "backward"
-								directions[0].name = "backward"
-								directions[1].name = "left"
-								directions[2].name = "forward"
-								directions[3].name = "right"
-							}
-							if (directions[j].name == "left" && directionFace == "backward")
-							{
-								directionFace = "right"
-								directions[0].name = "backward"
-								directions[1].name = "right"
-								directions[2].name = "left"
-								directions[3].name = "backward"
-							}
-							if (directions[j].name == "right" && directionFace == "backward")
-							{
-								directionFace = "left"
-								directions[0].name = "right"
-								directions[1].name = "backward"
-								directions[2].name = "left"
-								directions[3].name = "forward"
-							}
-							if (directions[j].name == "backward" && directionFace == "backward")
-							{
-								directionFace = "forward"
-								directions[0].name = "forward"
-								directions[1].name = "right"
-								directions[2].name = "backward"
-								directions[3].name = "left"
-							}
-							alert (directionFace);
-							
-							for (var i = 0; i < strArray.length; i++) // loop to find the key word Down! or up! 
-							{
-								if (strArray[i] == "down") 
-								{
-									newUser.CoOrdinates.Xaxis = 0; // reset coOrdinates to 0,0 as its a new area 
-									newUser.CoOrdinates.Yaxis = 0;
-								}else if(strArray[i] == "up" && newUser.CoOrdinates.Xaxis == 5 && newUser.CoOrdinates.Yaxis == 5) // if the user navigates to this spot and inputs up, they will return to original coOrdinates.
-								{																								//allowing them to carry on with the game etc.
-									newUser.coOrdinates.Xaxis = 6;
-									newUser.CoOrdinates.Yaxis = 2;
-								}
-							}
-							if(newUser.CoOrdinates.Xaxis >= 3 && newUser.CoOrdinates.Yaxis >= 2 && newUser.CoOrdinates.Xaxis <= 5 && newUser.CoOrdinates.Yaxis <= 5) // just used as an example. i have suggested that within these coOrdinates the user can see the cave
-							{
-								writeToTextArea("If you move to area 6,2 you will find a Forgotten Cave! or you can turn around and explore a different area!"); // i think we should tell the user where they are etc. allowing them to navigate to areas
-								
-							}
-							
-							if(newUser.CoOrdinates.Xaxis == 6 && newUser.CoOrdinates.Yaxis == 2) //this works and we can use this as a base to find locations.
-							{
-								
-								writeToTextArea("You have discovered The Forgotton Cave! move DOWN to explore!");
-							}
-					
-						}
                         }
-						
+
                     }
                 }
             }
@@ -425,8 +398,7 @@ function spawnMonster() {
 
 }
 
-function userStatus()
-{
+function userStatus() {
     writeToTextArea("You have chosen to Check Status");
     writeToTextArea("Your Current level is: " + newUser.Level);
 
@@ -438,26 +410,23 @@ function userStatus()
 
 }
 
-function userInventory()
-{
-	
+function userInventory() {
 
-	  for (var i = 0; i < items.length; i++) {
-		  if(items[i].Inventory > 0 )
-		  {
-			writeToTextArea("Item Name: " + items[i].Name + " Quantity: " + items[i].Inventory);
-		  }
+
+    for (var i = 0; i < items.length; i++) {
+        if (items[i].Inventory > 0) {
+            writeToTextArea("Item Name: " + items[i].Name + " Quantity: " + items[i].Inventory);
+        }
     }
-		writeToTextArea("Your Inventory: ");
-	
-	
+    writeToTextArea("Your Inventory: ");
+
+
 }
 
-function enemyInfo()
-{
-	writeToTextArea("You are currently fighitng: " + chosenMonster.Name);
-	writeToTextArea(chosenMonster.Name + " Spawned with " + chosenMonster.Health + "HP" + " and now has: " + currentMonsterHealth + "HP remaining " + " Keep fighting!");
-	writeToTextArea("Enemy Information: ");
-	
-	
+function enemyInfo() {
+    writeToTextArea("You are currently fighitng: " + chosenMonster.Name);
+    writeToTextArea(chosenMonster.Name + " Spawned with " + chosenMonster.Health + "HP" + " and now has: " + currentMonsterHealth + "HP remaining " + " Keep fighting!");
+    writeToTextArea("Enemy Information: ");
+
+
 }
