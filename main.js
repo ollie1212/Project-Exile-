@@ -23,13 +23,15 @@ var keywordArray = ["inventory", "status", "enemy", "health"];
 var userAction = "";
 var userCheckKeyword = "";
 
-function coOrdinates(Xaxis, Yaxis) {
+function coOrdinates(Xaxis, Yaxis)
+{
     this.Xaxis = Xaxis;
     this.Yaxis = Yaxis;
 }
 
 
-function actor(Name, Health, MaxHealth, Level, EXP, MaxEXP, CoOrdinates, MonDamage) {
+function actor(Name, Health, MaxHealth, Level, EXP, MaxEXP, CoOrdinates, MonDamage)
+{
     this.Name = Name;
     this.Health = Health;
     this.MaxHealth = MaxHealth;
@@ -73,16 +75,39 @@ var weapon = [
 	new weapons("claymore", 20, weaponPrefix[0])
 ];
 
-var items = [
-    { Name: "painkiller", Inventory: 3, Value: 50 },
-    { Name: "adrenaline", Inventory: 1, Value: 150 },
+var items = [ // order the items to the highest lootChance and the value has to be from 0 to 1
+    { Name: "adrenaline", Inventory: 1, Value: 150, LootChance: 0.9 },
+    { Name: "painkiller", Inventory: 3, Value: 50, LootChance: 0.8 },
+    { Name: "nothing", Inventory: 0, Value: 50, LootChance: 0 },
 ]
 
-function start() {
+function start()
+{
     writeToTextArea("Welcome to Our Text Based Adventure Game!");
     spawnMonster();
 }
 
+function drops()
+{
+    var randNumb = Math.random();
+    var count = 0;
+    for (i = 0; i < items.length; i++)
+    {
+        if (count == 0)
+        {
+            if (items[i].LootChance < randNumb)
+            {
+                items[i].Inventory++;
+                if (items[i].Name == "nothing")
+                {
+                    items[i].Inventory--;
+                }
+                writeToTextArea("You received " + items[i].Name);
+                count++;
+            }
+        }
+    }
+}
 
 function action() {
     var userInput = document.getElementById("userInput").value.toLowerCase();
@@ -101,12 +126,15 @@ function action() {
             }
         }
         //attack text parser
-        for (var i = 0; i < strArray.length; i++) {
-            for (var j = 0; j < actionArray.length; j++) {
-                if (strArray[i] == actionArray[j].Name) {
+        for (var i = 0; i < strArray.length; i++)
+        {
+            for (var j = 0; j < actionArray.length; j++)
+            {
+                if (strArray[i] == actionArray[j].Name)
+                {
                     userAction = strArray[i];
                     userActionDamage = actionArray[j].DamageMulti;
-                    userOverallDamage = userWeaponDamage * userActionDamage;  
+                    userOverallDamage = userWeaponDamage * userActionDamage;
                     currentMonsterHealth = currentMonsterHealth - userOverallDamage;
                     writeToTextArea("" + newUser.Name + " " + userAction + " " + chosenMonster.Name + " with " + userWeapon + " Dealing " + userOverallDamage);
                     writeToTextArea(chosenMonster.Name + " has " + currentMonsterHealth + " Health remaining");
@@ -123,7 +151,8 @@ function action() {
                     }
                     else {
                         newUser.Health = newUser.Health + items[j].Value;
-                        if (newUser.Health > newUser.MaxHealth) {
+                        if (newUser.Health > newUser.MaxHealth)
+                        {
                             newUser.Health = newUser.MaxHealth
                         }
                         items[j].Inventory--;
@@ -181,8 +210,7 @@ function action() {
 
         for (var i = 0; i < strArray.length; i++) // loop to find the key word Down! or up! 
         {
-            if (strArray[i] == "down")
-            {
+            if (strArray[i] == "down") {
                 newUser.CoOrdinates.Xaxis = 0; // reset coOrdinates to 0,0 as its a new area 
                 newUser.CoOrdinates.Yaxis = 0;
                 directionFace = "forward";
@@ -225,12 +253,11 @@ function action() {
                                 {
                                     writeToTextArea("You have left the (whatever place we are setting the game on)")
                                 }
-                                else
-                                {
+                                else {
                                     writeToTextArea("You went " + directions[j].name);
                                     alert(newUser.CoOrdinates.Xaxis + "," + newUser.CoOrdinates.Yaxis)
                                     //document.getElementById("input").value = "";
-                                    
+
                                 }
                                 //forward
                                 if (directions[j].name == "forward" && directionFace == "forward") {
@@ -354,7 +381,7 @@ function action() {
                                 }
                                 alert(directionFace);
 
-                               
+
 
                             }
                         }
@@ -365,10 +392,13 @@ function action() {
         }
 
 
-        if (currentMonsterHealth <= 0) {
+        if (currentMonsterHealth <= 0)
+        {
             monstersKilled.push(chosenMonster.Name);
             newUser.EXP = newUser.EXP + chosenMonster.EXP; //adds the monster's exp to the user's current EXP
-            while (newUser.EXP >= newUser.MaxEXP) {
+            //drops();
+            while (newUser.EXP >= newUser.MaxEXP)
+            {
                 newUser.Level = newUser.Level + 1; //increase level by one
                 newUser.MaxHealth = newUser.MaxHealth + 10 * newUser.Level; //increases user's max health by 10 * the user's current level
                 newUser.Health = newUser.MaxHealth; //current health fills back up after levelling up
@@ -379,8 +409,11 @@ function action() {
 
             }
             writeToTextArea("You gained " + chosenMonster.EXP + " EXP")
+            drops();
             spawnMonster(); // creates another monster to fight against
+
             count = 0;
+            
         }
 
     }
@@ -398,6 +431,11 @@ function spawnMonster() {
 
 }
 
+function spawnChest()
+{
+    drops();
+}
+
 function userStatus() {
     writeToTextArea("You have chosen to Check Status");
     writeToTextArea("Your Current level is: " + newUser.Level);
@@ -413,17 +451,18 @@ function userStatus() {
 function userInventory() {
 
 
-    for (var i = 0; i < items.length; i++) {
-        if (items[i].Inventory > 0) {
+    for (var i = 0; i < items.length; i++)
+    {
+        if (items[i].Inventory > 0)
+        {
             writeToTextArea("Item Name: " + items[i].Name + " Quantity: " + items[i].Inventory);
         }
     }
     writeToTextArea("Your Inventory: ");
-
-
 }
 
-function enemyInfo() {
+function enemyInfo()
+{
     writeToTextArea("You are currently fighitng: " + chosenMonster.Name);
     writeToTextArea(chosenMonster.Name + " Spawned with " + chosenMonster.Health + "HP" + " and now has: " + currentMonsterHealth + "HP remaining " + " Keep fighting!");
     writeToTextArea("Enemy Information: ");
