@@ -77,12 +77,16 @@ var weapon = [
 
 var items = [ // order the items to the highest lootChance and the value has to be from 0 to 1
     { Name: "adrenaline", Inventory: 1, Value: 150, LootChance: 0.9 },
-    { Name: "painkiller", Inventory: 3, Value: 50, LootChance: 0.8 },
-    { Name: "nothing", Inventory: 0, Value: 50, LootChance: 0 },
-]
+    { Name: "painkiller", Inventory: 3, Value: 50, LootChance: 0.6 },
+    { Name: "nothing", Inventory: 0, Value: 50, LootChance: 0.1 },
+];
 
-function start()
-{
+
+
+
+function start() {
+
+
     writeToTextArea("Welcome to Our Text Based Adventure Game!");
     spawnMonster();
 }
@@ -110,6 +114,9 @@ function drops()
 }
 
 function action() {
+	
+	var chanceTOCallFunction = Math.floor(Math.random() * 5) + 1;
+	
     var userInput = document.getElementById("userInput").value.toLowerCase();
     var strArray = userInput.split(" ");
     if (count == 0) {
@@ -410,6 +417,9 @@ function action() {
             }
             writeToTextArea("You gained " + chosenMonster.EXP + " EXP")
             drops();
+			if(chanceTOCallFunction <= 3){
+				roamingLoot();
+			}
             spawnMonster(); // creates another monster to fight against
 
             count = 0;
@@ -468,4 +478,35 @@ function enemyInfo()
     writeToTextArea("Enemy Information: ");
 
 
+}
+
+var newWep = [
+	{ Name: " ", Damage: 0, weapon: 0 },
+	];
+
+function roamingLoot()
+{
+	var weaponChance = Math.floor(Math.random() * 100 ) + 1;
+		
+	if(newUser.Level <= 3 && weaponChance <= 70 )
+	{
+			weapon.push(new weapons("dragonBlade", 45, weaponPrefix[2]));
+			
+	}	
+		else if(newUser.Level > 3 && newUser.Level <= 5 && weaponChance > 70)
+		{
+			weapon.push(new weapons("ghostBlade", 70, weaponPrefix[2]));
+		}
+	writeToTextArea("You have found some speacial Loot!");
+	
+	for(var i = 0; i < weapon.length; i++)
+	{
+		var count = i;
+		if (count == weapon.length -1 )
+		{	
+			writeToTextArea("New Weapon Found: " + weapon[count].Name);
+		}
+		
+	}
+	
 }
