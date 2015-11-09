@@ -1,9 +1,17 @@
 // JavaScript source code
+// JavaScript source code
 var userWeapon = "";
 var chosenMonster = "";
 var count = 0;
 var monstersKilled = [];
 var directionFace = "forward";
+
+var events = [
+	{Name:"Special-Weapon", Chance: 0.05},
+	{Name:"Chest", Chance: 0.25},
+	{Name:"Monster", Chance: 0.5},
+	
+]
 
 var actionArray = [
 { Name: "attack", DamageMulti: 1.2 },
@@ -76,12 +84,42 @@ var weapon = [
 ];
 
 var items = [ // order the items to the highest lootChance and the value has to be from 0 to 1
-    { Name: "adrenaline", Inventory: 1, Value: 150, LootChance: 0.9 },
-    { Name: "painkiller", Inventory: 3, Value: 50, LootChance: 0.6 },
-    { Name: "nothing", Inventory: 0, Value: 50, LootChance: 0.1 },
+    { Name: "adrenaline", Inventory: 1, Value: 150, LootChance: 0.3 },
+    { Name: "painkiller", Inventory: 3, Value: 50, LootChance: 0.4 },
+    { Name: "nothing", Inventory: 0, Value: 50, LootChance: 1 },
 ];
 
+function eventsGen()
+{
+	var count = 0;
+	var randNumb = Math.random();
 
+	for(var i = 0; i < events.length; i++)
+	{
+		if (count == 0)
+		{
+				alert(randNumb);
+			if (events[i].Name == "Monster" && events[i].Chance >= randNumb)
+			{
+				alert("monster");
+				spawnMonster();
+				count++;
+			}
+			else if(events[i].Name == "Chest" && events[i].Chance >= randNumb)
+			{
+				alert(chest);
+				spawnChest();
+				count++;
+			}
+			else if (events[i].Name == "Special-Weapon" && events[i].Chance >= randNumb)
+			{
+				alert("good weapon")
+				roamingLoot();
+				count++;
+			}
+		}
+	}
+}
 
 
 function start() {
@@ -99,7 +137,8 @@ function drops()
     {
         if (count == 0)
         {
-            if (items[i].LootChance < randNumb)
+			alert(randNumb);
+            if (randNumb < items[i].LootChance )
             {
                 items[i].Inventory++;
                 if (items[i].Name == "nothing")
@@ -264,6 +303,7 @@ function action() {
                                 else {
                                     writeToTextArea("You went " + directions[j].name);
                                     alert(newUser.CoOrdinates.Xaxis + "," + newUser.CoOrdinates.Yaxis)
+									eventsGen();
                                     //document.getElementById("input").value = "";
 
                                 }
@@ -417,11 +457,9 @@ function action() {
 
             }
             writeToTextArea("You gained " + chosenMonster.EXP + " EXP")
-            drops();
-			if(chanceTOCallFunction <= 3){
-				roamingLoot();
-			}
-            spawnMonster(); // creates another monster to fight against
+            //drops();
+			
+            //spawnMonster(); // creates another monster to fight against
 
             count = 0;
             
@@ -444,6 +482,7 @@ function spawnMonster() {
 
 function spawnChest()
 {
+	writeToTextArea("You found a chest");
     drops();
 }
 
@@ -480,10 +519,6 @@ function enemyInfo()
 
 
 }
-
-var newWep = [
-	{ Name: " ", Damage: 0, weapon: 0 },
-	];
 
 function roamingLoot()
 {
