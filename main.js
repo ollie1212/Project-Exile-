@@ -58,28 +58,38 @@ var monsters = [
     new actor("hobb", 120, 120, 2, 30, 30, 0, 30)
 ];
 
-function prefix(Name, DamageMod)
+function prefix(Name, DamageMod, ConditionMod, ValueMod, SpecialEffect, Rarity)
 {
     this.Name = Name;
     this.DamageMod = DamageMod;
+	this.ConditionMod = ConditionMod;
+	this.ValueMod = ValueMod;
+	this.SpecialEffect = SpecialEffect;
+	this.Rarity = Rarity;
 }
 
 var weaponPrefix = [
-	new prefix("common", 1),
-	new prefix("rusty", 0.6),
-	new prefix("refined", 1.2),
-	new prefix("legendary", 1000)
+	new prefix("common", 1, 1, 1, "none", "none"),
+	new prefix("rusty", 0.6, 0.4, 0.4, "tetanus", "common"),
+	new prefix("trusty", 1, 1, 1, "unbreakable", "unique"),
+	new prefix("antique", 0.6, 0.2, 5.25, "none", "rare")
+	new prefix("crystalised", 3, 0.8, 0.7, "bleed", "v-rare")
+	new prefix("tempered", 1.1, 0.85, 0.9, "none", "rare")
+	new prefix("cursed", 1.5, 1.5, 2.5, "cursed?", "unique")
+	new prefix("baneforged", 2, 2, 0.1, "argh", "unique")
 ];
 
-function weapons(Name, Damage, Prefix)
+function weapons(Name, Damage, Condition, Value, Prefix)
 {
     this.Name = Name;
     this.Damage = Damage;
+	this.Condition = Condition;
+	this.Value = Value;
     this.Prefix = new prefix("devNULL", 1);
 }
 
 var weapon = [
-	new weapons("sword", 15, weaponPrefix[0]),
+	new weapons("sword", 15, weaponPrefix[2]),
 	//new weapons("halberd", 25, weaponPrefix[0]),
 	//new weapons("rapier", 10, weaponPrefix[0]),
 	//new weapons("claymore", 20, weaponPrefix[0])
@@ -150,7 +160,7 @@ function drops() {
 function action() {
 
     var chanceTOCallFunction = Math.floor(Math.random() * 5) + 1;
-    var playerTurn = 1;
+    var playerTurn = 1; 
     var enemyTurn = 0;
 
     var userInput = document.getElementById("userInput").value.toLowerCase();
@@ -561,11 +571,11 @@ function roamingLoot()
 	}
     if (newUser.Level <= 3 && weaponChance <= 70)
     {		
-			weapon.push(new weapons("dragonblade", 45, weaponPrefix[2]));	
+			weapon.push(new weapons("dragonblade", 45, weaponPrefix[4]));	
     }
     else if (newUser.Level > 3 && newUser.Level <= 5 && weaponChance > 70)
     {
-        weapon.push(new weapons("ghostblade", 70, weaponPrefix[2]));
+        weapon.push(new weapons("ghostblade", 70, weaponPrefix[6]));
     }
 
     writeToTextArea("You have found some speacial Loot!");
