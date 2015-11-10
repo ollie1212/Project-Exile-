@@ -9,7 +9,7 @@ var currentMonsterHealth;
 var events = [
 	{ Name: "Special-Weapon", Chance: 0.05 },
 	{ Name: "Chest", Chance: 0.25 },
-	{ Name: "Monster", Chance: 0.5 },
+	{ Name: "Monster", Chance: 0.60 },
 
 ]
 
@@ -80,9 +80,9 @@ function weapons(Name, Damage, Prefix)
 
 var weapon = [
 	new weapons("sword", 15, weaponPrefix[0]),
-	new weapons("halberd", 25, weaponPrefix[0]),
-	new weapons("rapier", 10, weaponPrefix[0]),
-	new weapons("claymore", 20, weaponPrefix[0])
+	//new weapons("halberd", 25, weaponPrefix[0]),
+	//new weapons("rapier", 10, weaponPrefix[0]),
+	//new weapons("claymore", 20, weaponPrefix[0])
 ];
 
 var items = [ // order the items to the highest lootChance and the value has to be from 0 to 1
@@ -133,8 +133,8 @@ function drops() {
     var randNumb = Math.random();
     var count = 0;
     for (i = 0; i < items.length; i++) {
-        if (count == 0) {
-            alert(randNumb);
+        if (count == 0) 
+		{
             if (randNumb < items[i].LootChance) {
                 items[i].Inventory++;
                 if (items[i].Name == "nothing") {
@@ -549,10 +549,19 @@ function enemyInfo()
 function roamingLoot()
 {
     var weaponChance = Math.floor(Math.random() * 100) + 1;
-
+	
+	for(var i = 0; i < weapon.length; i++)
+	{
+		if(weapon[i].Name == "dragonblade" || weapon[i].Name == "ghostblade")
+		{
+			writeToTextArea("Found no New Item");
+			return 0;
+		}
+		
+	}
     if (newUser.Level <= 3 && weaponChance <= 70)
-    {
-        weapon.push(new weapons("dragonblade", 45, weaponPrefix[2]));
+    {		
+			weapon.push(new weapons("dragonblade", 45, weaponPrefix[2]));	
     }
     else if (newUser.Level > 3 && newUser.Level <= 5 && weaponChance > 70)
     {
