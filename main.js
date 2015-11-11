@@ -1,4 +1,3 @@
-// JavaScript source code
 var userWeapon = "";
 var chosenMonster = "";
 var count = 0;
@@ -72,10 +71,10 @@ var weaponPrefix = [
 	new prefix("common", 1, 1, 1, "none", "none"),
 	new prefix("rusty", 0.6, 0.4, 0.4, "tetanus", "common"),
 	new prefix("trusty", 1, 1, 1, "unbreakable", "unique"),
-	new prefix("antique", 0.6, 0.2, 5.25, "none", "rare")
-	new prefix("crystalised", 3, 0.8, 0.7, "bleed", "v-rare")
-	new prefix("tempered", 1.1, 0.85, 0.9, "none", "rare")
-	new prefix("cursed", 1.5, 1.5, 2.5, "cursed?", "unique")
+	new prefix("antique", 0.6, 0.2, 5.25, "none", "rare"),
+	new prefix("crystalised", 3, 0.8, 0.7, "bleed", "v-rare"),
+	new prefix("tempered", 1.1, 0.85, 0.9, "none", "rare"),
+	new prefix("cursed", 1.5, 1.5, 2.5, "cursed?", "unique"),
 	new prefix("baneforged", 2, 2, 0.1, "argh", "unique")
 ];
 
@@ -112,19 +111,18 @@ function eventsGen()
             alert(randNumb);
             if (events[i].Name == "Monster" && events[i].Chance >= randNumb)
             {
-                alert("monster");
+                writeToTextArea("You have encountered an enemy!");
                 spawnMonster();
                 count++;
             }
             else if (events[i].Name == "Chest" && events[i].Chance >= randNumb && randNumb < 0.5 )
             {
-                alert("chest");
+                
                 spawnChest();
                 count++;
             }
             else if (events[i].Name == "Special-Weapon" && events[i].Chance >= randNumb )
-            {
-                alert("good weapon")
+            {   
                 roamingLoot();
                 count++;
             }
@@ -295,9 +293,11 @@ function action() {
     for (var i = 0; i < strArray.length; i++) // loop to find the key word Down! or up! 
     {
         if (strArray[i] == "down") {
+			writeToTextArea("You have moved down to the forgotten cave! Have umm fun...?");
             newUser.CoOrdinates.Xaxis = 0; // reset coOrdinates to 0,0 as its a new area 
             newUser.CoOrdinates.Yaxis = 0;
             directionFace = "forward";
+			alert(directionFace);
         }
         else if (strArray[i] == "up" && newUser.CoOrdinates.Xaxis == 5 && newUser.CoOrdinates.Yaxis == 5) // if the user navigates to this spot and inputs up, they will return to original coOrdinates.
         {																								//allowing them to carry on with the game etc.
@@ -305,15 +305,7 @@ function action() {
             newUser.CoOrdinates.Yaxis = 2;
         }
     }
-    if (newUser.CoOrdinates.Xaxis >= 3 && newUser.CoOrdinates.Yaxis >= 2 && newUser.CoOrdinates.Xaxis <= 5 && newUser.CoOrdinates.Yaxis <= 5) // just used as an example. i have suggested that within these coOrdinates the user can see the cave
-    {
-        writeToTextArea("If you move to area 6,2 you will find a Forgotten Cave! or you can turn around and explore a different area!"); // i think we should tell the user where they are etc. allowing them to navigate to areas
-    }
-
-    if (newUser.CoOrdinates.Xaxis == 6 && newUser.CoOrdinates.Yaxis == 2) //this works and we can use this as a base to find locations.
-    {
-        writeToTextArea("You have discovered The Forgotton Cave! move DOWN to explore!");
-    }
+ 
 
     // might want to move this text parser somewhere else as i dont know where to put it
     var countTemp = 0;
@@ -466,7 +458,15 @@ function action() {
                             }
                             alert(directionFace);
 
+						   if (newUser.CoOrdinates.Xaxis >= 3 && newUser.CoOrdinates.Yaxis >= 2 && newUser.CoOrdinates.Xaxis <= 5 && newUser.CoOrdinates.Yaxis <= 5) // just used as an example. i have suggested that within these coOrdinates the user can see the cave
+							{
+								writeToTextArea("If you move to area 6,2 you will find a Forgotten Cave! or you can turn around and explore a different area!"); // i think we should tell the user where they are etc. allowing them to navigate to areas
+							}
 
+							if (newUser.CoOrdinates.Xaxis == 6 && newUser.CoOrdinates.Yaxis == 2) //this works and we can use this as a base to find locations.
+							{
+								writeToTextArea("You have discovered The Forgotten Cave! move DOWN to explore!");
+							}
 
                         }
                     }
@@ -600,3 +600,4 @@ function defeat()
     newUser.MaxEXP = 20;
     start();
 }
+
