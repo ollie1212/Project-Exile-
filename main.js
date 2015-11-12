@@ -5,13 +5,13 @@ var monstersKilled = [];
 var directionFace = "forward";
 var currentMonsterHealth;
 var userWeaponDamage;
-var userActionDamage;;
+var userActionDamage;
+var checkValue = 0;
 
 var events = [
 	{ Name: "Special-Weapon", Chance: 0.05 },
 	{ Name: "Chest", Chance: 0.25 },
 	{ Name: "Monster", Chance: 0.60 },
-
 ]
 
 var actionArray = [
@@ -32,7 +32,8 @@ var keywordArray = ["inventory", "status", "enemy", "health"];
 var userAction = "";
 var userCheckKeyword = "";
 
-function coOrdinates(Xaxis, Yaxis) {
+function coOrdinates(Xaxis, Yaxis) 
+{
     this.Xaxis = Xaxis;
     this.Yaxis = Yaxis;
 }
@@ -56,7 +57,8 @@ var monsters = [
     new actor("skeleton", 40, 40, 1, 15, 15, 0, 5),
     new actor("wolf", 60, 60, 1, 20, 20, 0, 15),
     new actor("highwayman", 200, 200, 3, 40, 40, 0, 40),
-    new actor("hobb", 120, 120, 2, 30, 30, 0, 30)
+    new actor("hobb", 120, 120, 2, 30, 30, 0, 30),
+	new actor("null", 0,0,0,0,0,0,0),
 ];
 
 function prefix(Name, DamageMod, ConditionMod, ValueMod, SpecialEffect, Rarity)
@@ -69,7 +71,8 @@ function prefix(Name, DamageMod, ConditionMod, ValueMod, SpecialEffect, Rarity)
 	this.Rarity = Rarity;
 }
 
-var weaponPrefix = [
+var weaponPrefix = 
+[
 	new prefix("common", 1, 1, 1, "none", "none"),
 	new prefix("rusty", 0.6, 0.4, 0.4, "tetanus", "common"),
 	new prefix("trusty", 1, 1, 1, "unbreakable", "unique"),
@@ -91,9 +94,9 @@ function weapons(Name, Damage, Condition, Value, Prefix)
 
 var weapon = [
 	new weapons("sword", 15, weaponPrefix[2]),
-	//new weapons("halberd", 25, weaponPrefix[0]),
-	//new weapons("rapier", 10, weaponPrefix[0]),
-	//new weapons("claymore", 20, weaponPrefix[0])
+	new weapons("halberd", 25, weaponPrefix[0]),
+	new weapons("rapier", 10, weaponPrefix[0]),
+	new weapons("claymore", 20, weaponPrefix[0])
 ];
 
 var items = [ // order the items to the highest lootChance and the value has to be from 0 to 1
@@ -139,15 +142,19 @@ function start()
     spawnMonster();
 }
 
-function drops() {
+function drops() 
+{
     var randNumb = Math.random();
     var count = 0;
-    for (i = 0; i < items.length; i++) {
+    for (i = 0; i < items.length; i++) 
+	{
         if (count == 0) 
 		{
-            if (randNumb < items[i].LootChance) {
+            if (randNumb < items[i].LootChance) 
+			{
                 items[i].Inventory++;
-                if (items[i].Name == "nothing") {
+                if (items[i].Name == "nothing") 
+				{
                     items[i].Inventory--;
                 }
                 writeToTextArea("You received " + items[i].Name);
@@ -157,8 +164,8 @@ function drops() {
     }
 }
 
-function action() {
-
+function action() 
+{
     var chanceTOCallFunction = Math.floor(Math.random() * 5) + 1;
     var playerTurn = 1; 
     var enemyTurn = 0;
@@ -210,7 +217,7 @@ function action() {
         }
     }
 	
-	// might want to move this text parser somewhere else as i dont know where to put it
+	// might want to move this text parser somewhere else as I don't know where to put it
     var countTemp = 0;
     for (var i = 0; i < strArray.length; i++) // this is the text parser for going around the map
     {
@@ -233,6 +240,7 @@ function action() {
                                 writeToTextArea("You have left the (whatever place we are setting the game on)")
                             }
                             else {
+								checkValue = 1;
                                 writeToTextArea("You went " + directions[j].name);
 								playerTurn = 0;
                                 alert(newUser.CoOrdinates.Xaxis + "," + newUser.CoOrdinates.Yaxis);
@@ -366,30 +374,52 @@ function action() {
 							{
 								writeToTextArea("If you move to area 6,2 you will find a Forgotten Cave! or you can turn around and explore a different area!"); // i think we should tell the user where they are etc. allowing them to navigate to areas
 							}
-
 							if (newUser.CoOrdinates.Xaxis == 6 && newUser.CoOrdinates.Yaxis == 2) //this works and we can use this as a base to find locations.
 							{
 								writeToTextArea("You have discovered The Forgotten Cave! move DOWN to explore!");
 							}
-
                         }
                     }
-
                 }
             }
         }
     }
 	
+	for (var i = 0; i < strArray.length; i++) // loop to find the key word Down! or up! 
+    {
+        if (strArray[i] == "down") {
+			writeToTextArea("You have moved down to the forgotten cave! Have umm fun...?");
+            newUser.CoOrdinates.Xaxis = 0; // reset coOrdinates to 0,0 as its a new area 
+            newUser.CoOrdinates.Yaxis = 0;
+            directionFace = "forward";
+			alert(directionFace);
+        }
+        else if (strArray[i] == "up" && newUser.CoOrdinates.Xaxis == 5 && newUser.CoOrdinates.Yaxis == 5) // if the user navigates to this spot and inputs up, they will return to original coOrdinates.
+        {																								//allowing them to carry on with the game etc.
+            newUser.CoOrdinates.Xaxis = 6;
+            newUser.CoOrdinates.Yaxis = 2;
+        }
+    }
+	
+	if (chosenMonster.Name == "null" && checkValue == 0)
+	{
+		writeToTextArea("There are no enemies to attack")
+		document.getElementById("userInput").value = "";
+	}
+	else
+	{
     if (playerTurn == 1)
     {
-        
         if (count == 0)
         {
+			
             currentMonsterHealth = chosenMonster.Health;
             count = 1;
+			
         }
         else
         {
+			checkValue = 1;
             //weapon text parser
             for (var i = 0; i < strArray.length; i++)
             {
@@ -438,7 +468,7 @@ function action() {
                             newUser.Health = newUser.Health + items[j].Value;
                             if (newUser.Health > newUser.MaxHealth)
                             {
-                                newUser.Health = newUser.MaxHealth
+                                newUser.Health = newUser.MaxHealth;
                             }
                             playerTurn = 0;
                             enemyTurn = 1;
@@ -466,28 +496,7 @@ function action() {
             defeat();
         }
     }
-
-
-    for (var i = 0; i < strArray.length; i++) // loop to find the key word Down! or up! 
-    {
-        if (strArray[i] == "down") {
-			writeToTextArea("You have moved down to the forgotten cave! Have umm fun...?");
-            newUser.CoOrdinates.Xaxis = 0; // reset coOrdinates to 0,0 as its a new area 
-            newUser.CoOrdinates.Yaxis = 0;
-            directionFace = "forward";
-			alert(directionFace);
-        }
-        else if (strArray[i] == "up" && newUser.CoOrdinates.Xaxis == 5 && newUser.CoOrdinates.Yaxis == 5) // if the user navigates to this spot and inputs up, they will return to original coOrdinates.
-        {																								//allowing them to carry on with the game etc.
-            newUser.CoOrdinates.Xaxis = 6;
-            newUser.CoOrdinates.Yaxis = 2;
-        }
-    }
- 
-
-    
-
-
+	
     if (currentMonsterHealth <= 0)
     {
         count = 1;
@@ -502,18 +511,19 @@ function action() {
             //newUser.DMG =  Math.round((newUser.DMG + 2 + Math.floor(Math.random() * 3) + 1) * 1.02);
             newUser.EXP = newUser.EXP - newUser.MaxEXP; // used so that the loop will keep looping until newUser.EXP is lesser than newUser.MaxEXP
             newUser.MaxEXP = newUser.MaxEXP + 10 * newUser.Level;
-            writeToTextArea("You leveled up to LVL: " + newUser.Level + "\nHealth is now: " + newUser.MaxHealth + "\nNext amount of EXP needed to level up is: " + newUser.MaxEXP);
+            writeToTextArea("You levelled up to LVL: " + newUser.Level + "\nHealth is now: " + newUser.MaxHealth + "\nNext amount of EXP needed to level up is: " + newUser.MaxEXP);
 
         }
+		if(chosenMonster.Name != "null")
         writeToTextArea("You gained " + chosenMonster.EXP + " EXP")
         //drops();
-
+		chosenMonster = monsters[4];
         //spawnMonster(); // creates another monster to fight against
-
+		checkValue = 0;
         count = 0;
 
     }
-
+	}
 }
 
 
@@ -524,15 +534,23 @@ function writeToTextArea(string)
 
 }
 // gen monster 
-function spawnMonster() {
+function spawnMonster() 
+{
     var rand = Math.floor(Math.random() * monsters.length);
-    chosenMonster = monsters[rand];
+	chosenMonster = monsters[rand];
+	if(chosenMonster.Name == "null")
+	{
+		 spawnMonster();
+	}else
+	{
     currentMonsterHealth = chosenMonster.Health;
     writeToTextArea("You are fighting: " + chosenMonster.Name);
-
+	}
 }
 
-function spawnChest() {
+function spawnChest() 
+{
+	checkValue = 1;
     writeToTextArea("You found a chest");
     drops();
 }
@@ -562,13 +580,14 @@ function userInventory() {
 
 function enemyInfo()
 {
-    writeToTextArea("You are currently fighitng: " + chosenMonster.Name);
+    writeToTextArea("You are currently fighting: " + chosenMonster.Name);
     writeToTextArea(chosenMonster.Name + " Spawned with " + chosenMonster.Health + "HP" + " and now has: " + currentMonsterHealth + "HP remaining " + " Keep fighting!");
     writeToTextArea("Enemy Information: ");
 }
 
 function roamingLoot()
 {
+	checkValue = 1;
     var weaponChance = Math.floor(Math.random() * 100) + 1;
 	
 	for(var i = 0; i < weapon.length; i++)
@@ -589,7 +608,7 @@ function roamingLoot()
         weapon.push(new weapons("ghostblade", 70, weaponPrefix[6]));
     }
 
-    writeToTextArea("You have found some speacial Loot!");
+    writeToTextArea("You have found some special Loot!");
 
     for (var i = 0; i < weapon.length; i++)
     {
