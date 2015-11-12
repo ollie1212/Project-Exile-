@@ -4,6 +4,8 @@ var count = 0;
 var monstersKilled = [];
 var directionFace = "forward";
 var currentMonsterHealth;
+var userWeaponDamage;
+var userActionDamage;;
 
 var events = [
 	{ Name: "Special-Weapon", Chance: 0.05 },
@@ -163,94 +165,8 @@ function action() {
 
     var userInput = document.getElementById("userInput").value.toLowerCase();
     var strArray = userInput.split(" ");
-
-    if (playerTurn == 1)
-    {
-        
-        if (count == 0)
-        {
-            currentMonsterHealth = chosenMonster.Health;
-            count = 1;
-        }
-        else
-        {
-            //weapon text parser
-            for (var i = 0; i < strArray.length; i++)
-            {
-                for (var j = 0; j < weapon.length; j++)
-                {
-                    if (strArray[i] == weapon[j].Name)
-                    {
-                        userWeapon = strArray[i];
-                        userWeaponDamage = weapon[j].Damage;
-                        playerTurn = 0;
-                        enemyTurn = 1;
-                    }
-                }
-            }
-            //attack text parser
-            for (var i = 0; i < strArray.length; i++)
-            {
-                for (var j = 0; j < actionArray.length; j++)
-                {
-                    if (strArray[i] == actionArray[j].Name)
-                    {
-                        userAction = strArray[i];
-                        userActionDamage = actionArray[j].DamageMulti;
-                        userOverallDamage = userWeaponDamage * userActionDamage;
-                        currentMonsterHealth = currentMonsterHealth - userOverallDamage;
-                        writeToTextArea("" + newUser.Name + " " + userAction + " " + chosenMonster.Name + " with " + userWeapon + " Dealing " + userOverallDamage);
-                        writeToTextArea(chosenMonster.Name + " has " + currentMonsterHealth + " Health remaining");
-                        playerTurn = 0;
-                        enemyTurn = 1;
-                    }
-                }
-            }
-            //items text parser
-            for (var i = 0; i < strArray.length; i++)
-            {
-                for (var j = 0; j < items.length; j++)
-                {
-                    if (strArray[i] == items[j].Name)
-                    {
-                        if (items[j].Inventory == 0)
-                        {
-                            writeToTextArea(newUser.Name + " don't have " + items[j].Name + "s in your inventory");
-                        }
-                        else
-                        {
-                            newUser.Health = newUser.Health + items[j].Value;
-                            if (newUser.Health > newUser.MaxHealth)
-                            {
-                                newUser.Health = newUser.MaxHealth
-                            }
-                            playerTurn = 0;
-                            enemyTurn = 1;
-                            items[j].Inventory--;
-                            writeToTextArea("Your current health is " + newUser.Health + " " + newUser.Name + " have gained " + items[j].Value + "HP" + "\n" + "You have used " + items[j].Name);
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    if (enemyTurn == 1)
-    {
-        playerTurn = 1;
-        enemyTurn = 0;
-        if (newUser.Health >= 0 && currentMonsterHealth >= 0)
-        {
-            newUser.Health = newUser.Health - chosenMonster.MonDamage;
-            writeToTextArea(chosenMonster.Name + " has Attacked you! Dealing: " + chosenMonster.MonDamage + " Damage" + " You have: " + newUser.Health + " Health remaining");
-        }
-        if (newUser.Health <= 0)
-        {
-            writeToTextArea("\n\n You Have Been Defeated!\n\n");
-            defeat();
-        }
-    }
-
+	
+	
     for (var i = 0; i < strArray.length; i++)
     {
         if (strArray[i] == "check")
@@ -269,18 +185,22 @@ function action() {
 
                             case "status":
                                 userStatus();
+								playerTurn = 0;
                                 break;
 
                             case "inventory":
                                 userInventory();
+								playerTurn = 0;
                                 break;
 
                             case "enemy":
                                 enemyInfo();
+								playerTurn = 0;
                                 break;
 
                             case "health":
                                 userHealth();
+								playerTurn = 0;
                                 break;
                         }
                     }
@@ -289,25 +209,8 @@ function action() {
             }
         }
     }
-
-    for (var i = 0; i < strArray.length; i++) // loop to find the key word Down! or up! 
-    {
-        if (strArray[i] == "down") {
-			writeToTextArea("You have moved down to the forgotten cave! Have umm fun...?");
-            newUser.CoOrdinates.Xaxis = 0; // reset coOrdinates to 0,0 as its a new area 
-            newUser.CoOrdinates.Yaxis = 0;
-            directionFace = "forward";
-			alert(directionFace);
-        }
-        else if (strArray[i] == "up" && newUser.CoOrdinates.Xaxis == 5 && newUser.CoOrdinates.Yaxis == 5) // if the user navigates to this spot and inputs up, they will return to original coOrdinates.
-        {																								//allowing them to carry on with the game etc.
-            newUser.CoOrdinates.Xaxis = 6;
-            newUser.CoOrdinates.Yaxis = 2;
-        }
-    }
- 
-
-    // might want to move this text parser somewhere else as i dont know where to put it
+	
+	// might want to move this text parser somewhere else as i dont know where to put it
     var countTemp = 0;
     for (var i = 0; i < strArray.length; i++) // this is the text parser for going around the map
     {
@@ -331,7 +234,8 @@ function action() {
                             }
                             else {
                                 writeToTextArea("You went " + directions[j].name);
-                                alert(newUser.CoOrdinates.Xaxis + "," + newUser.CoOrdinates.Yaxis)
+								playerTurn = 0;
+                                alert(newUser.CoOrdinates.Xaxis + "," + newUser.CoOrdinates.Yaxis);
                                 eventsGen();
                                 //document.getElementById("input").value = "";
 
@@ -475,6 +379,113 @@ function action() {
             }
         }
     }
+	
+    if (playerTurn == 1)
+    {
+        
+        if (count == 0)
+        {
+            currentMonsterHealth = chosenMonster.Health;
+            count = 1;
+        }
+        else
+        {
+            //weapon text parser
+            for (var i = 0; i < strArray.length; i++)
+            {
+                for (var j = 0; j < weapon.length; j++)
+                {
+                    if (strArray[i] == weapon[j].Name)
+                    {
+                        userWeapon = strArray[i];
+                        userWeaponDamage = weapon[j].Damage;
+                        playerTurn = 0;
+                        enemyTurn = 1;
+                    }
+                }
+            }
+            //attack text parser
+            for (var i = 0; i < strArray.length; i++)
+            {
+                for (var j = 0; j < actionArray.length; j++)
+                {
+                    if (strArray[i] == actionArray[j].Name)
+                    {
+                        userAction = strArray[i];
+                        userActionDamage = actionArray[j].DamageMulti;
+                        userOverallDamage = userWeaponDamage * userActionDamage;
+                        currentMonsterHealth = currentMonsterHealth - userOverallDamage;
+                        writeToTextArea("" + newUser.Name + " " + userAction + " " + chosenMonster.Name + " with " + userWeapon + " Dealing " + userOverallDamage);
+                        writeToTextArea(chosenMonster.Name + " has " + currentMonsterHealth + " Health remaining");
+                        playerTurn = 0;
+                        enemyTurn = 1;
+                    }
+                }
+            }
+            //items text parser
+            for (var i = 0; i < strArray.length; i++)
+            {
+                for (var j = 0; j < items.length; j++)
+                {
+                    if (strArray[i] == items[j].Name)
+                    {
+                        if (items[j].Inventory == 0)
+                        {
+                            writeToTextArea(newUser.Name + " don't have " + items[j].Name + "s in your inventory");
+                        }
+                        else
+                        {
+                            newUser.Health = newUser.Health + items[j].Value;
+                            if (newUser.Health > newUser.MaxHealth)
+                            {
+                                newUser.Health = newUser.MaxHealth
+                            }
+                            playerTurn = 0;
+                            enemyTurn = 1;
+                            items[j].Inventory--;
+                            writeToTextArea("Your current health is " + newUser.Health + " " + newUser.Name + " have gained " + items[j].Value + "HP" + "\n" + "You have used " + items[j].Name);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    if (enemyTurn == 1)
+    {
+        playerTurn = 1;
+        enemyTurn = 0;
+        if (newUser.Health >= 0 && currentMonsterHealth >= 0)
+        {
+            newUser.Health = newUser.Health - chosenMonster.MonDamage;
+            writeToTextArea(chosenMonster.Name + " has Attacked you! Dealing: " + chosenMonster.MonDamage + " Damage" + " You have: " + newUser.Health + " Health remaining");
+        }
+        if (newUser.Health <= 0)
+        {
+            writeToTextArea("\n\n You Have Been Defeated!\n\n");
+            defeat();
+        }
+    }
+
+
+    for (var i = 0; i < strArray.length; i++) // loop to find the key word Down! or up! 
+    {
+        if (strArray[i] == "down") {
+			writeToTextArea("You have moved down to the forgotten cave! Have umm fun...?");
+            newUser.CoOrdinates.Xaxis = 0; // reset coOrdinates to 0,0 as its a new area 
+            newUser.CoOrdinates.Yaxis = 0;
+            directionFace = "forward";
+			alert(directionFace);
+        }
+        else if (strArray[i] == "up" && newUser.CoOrdinates.Xaxis == 5 && newUser.CoOrdinates.Yaxis == 5) // if the user navigates to this spot and inputs up, they will return to original coOrdinates.
+        {																								//allowing them to carry on with the game etc.
+            newUser.CoOrdinates.Xaxis = 6;
+            newUser.CoOrdinates.Yaxis = 2;
+        }
+    }
+ 
+
+    
 
 
     if (currentMonsterHealth <= 0)
