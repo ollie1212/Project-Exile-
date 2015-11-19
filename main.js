@@ -7,11 +7,22 @@ var currentMonsterHealth;
 var userWeaponDamage;
 var userActionDamage;
 var checkValue = 0;
-
+var currentLocation = "";
 var events = [
 	{ Name: "Special-Weapon", Chance: 0.05 },
 	{ Name: "Chest", Chance: 0.25 },
 	{ Name: "Monster", Chance: 0.60 },
+]
+
+var locations = [
+	{Name:"cave", Xaxis:1, Yaxis:1},
+	{Name:"graveyard", Xaxis: 2, Yaxis:4}
+]
+
+var caveEvents = [
+	{Name:"SpecialCaveWeapon", Chance:0.05},
+	{Name:"CaveLoot", Chance:0.25},
+	{Name: "CaveMonster", Chance: 0.80}
 ]
 
 var actionArray = [
@@ -39,7 +50,7 @@ function coOrdinates(Xaxis, Yaxis)
 }
 
 
-function actor(Name, Health, MaxHealth, Level, EXP, MaxEXP, CoOrdinates, MonDamage)
+function actor(Name, Health, MaxHealth, Level, EXP, MaxEXP, CoOrdinates, MonDamage, Location)
 {
     this.Name = Name;
     this.Health = Health;
@@ -49,17 +60,23 @@ function actor(Name, Health, MaxHealth, Level, EXP, MaxEXP, CoOrdinates, MonDama
     this.MaxEXP = MaxEXP;
     this.CoOrdinates = new coOrdinates(0, 0);
     this.MonDamage = MonDamage;
+	this.Location = Location;
 }
 
-var newUser = new actor("you", 200, 200, 1, 0, 20, coOrdinates(0, 0), 0);
+var newUser = new actor("you", 200, 200, 1, 0, 20, coOrdinates(0, 0), 0, "plainGround");
 
 var monsters = [
-    new actor("skeleton", 40, 40, 1, 15, 15, 0, 5),
-    new actor("wolf", 60, 60, 1, 20, 20, 0, 15),
-    new actor("highwayman", 200, 200, 3, 40, 40, 0, 40),
-    new actor("hobb", 120, 120, 2, 30, 30, 0, 30),
-	new actor("null", 0,0,0,0,0,0,0),
+    new actor("skeleton", 40, 40, 1, 15, 15, 0, 5, " "),
+    new actor("wolf", 60, 60, 1, 20, 20, 0, 15, " "),
+    new actor("highwayman", 200, 200, 3, 40, 40, 0, 40, " "),
+    new actor("hobb", 120, 120, 2, 30, 30, 0, 30, " "),
+	new actor("null", 0,0,0,0,0,0,0, " "),
 ];
+
+var caveMonsters = [
+	new actor("imp", 50, 50, 2, 25, 25, 0, 25),
+	new actor("null",0,0,0,0,0,0,0," "),
+]
 
 function prefix(Name, DamageMod, ConditionMod, ValueMod, SpecialEffect, Rarity)
 {
@@ -109,7 +126,7 @@ function eventsGen()
 {
     var count = 0;
     var randNumb = Math.random();
-
+	
     for (var i = 0; i < events.length; i++)
     {
         if (count == 0) {
@@ -135,12 +152,31 @@ function eventsGen()
     }
 }
 
+function caveEventsGen()
+{
+	var count = 0;
+	var randNumb = Math.random();
+	
+	for (var i = 0; i < caveEvents.length; i++)
+	{
+		if (count == 0)
+		{
+		if(caveEvents[i].Name == "CaveMonster" && caveEvents[i].Chance >= randNumb)
+		{
+			writeToTextArea("You have encountered an enemy!");
+            spawnCaveMonster();
+            count++;
+		}
+		}
+	}
+}
 
 function start()
 {
     writeToTextArea("Welcome to Our Text Based Adventure Game!");
     spawnMonster();
 }
+
 
 function drops() 
 {
@@ -221,11 +257,17 @@ function action()
     var countTemp = 0;
     for (var i = 0; i < strArray.length; i++) // this is the text parser for going around the map
     {
-        if (strArray[i] == "go") {
-            for (var i = 0; i < strArray.length; i++) {
-                for (var j = 0; j < directions.length; j++) {
-                    if (countTemp == 0) {
-                        if (strArray[i] == directions[j].name) {
+	
+        if (strArray[i] == "go") 
+		{
+            for (var i = 0; i < strArray.length; i++) 
+			{
+                for (var j = 0; j < directions.length; j++) 
+				{
+                    if (countTemp == 0) 
+					{
+                        if (strArray[i] == directions[j].name) 
+						{
 
                             newUser.CoOrdinates.Yaxis = newUser.CoOrdinates.Yaxis + directions[j].YAxis; //increase or decreases the y axis of the user's character depending on the direction they are going
                             newUser.CoOrdinates.Xaxis = newUser.CoOrdinates.Xaxis + directions[j].XAxis; //increase or decreases the x axis of the user's character depending on the direction they are going
@@ -239,14 +281,21 @@ function action()
                             {
                                 writeToTextArea("You have left the (whatever place we are setting the game on)")
                             }
-                            else {
+                            else 
+							{
+								
 								checkValue = 1;
                                 writeToTextArea("You went " + directions[j].name);
 								playerTurn = 0;
                                 alert(newUser.CoOrdinates.Xaxis + "," + newUser.CoOrdinates.Yaxis);
+								if(newUser.Location == "plainGround"){
                                 eventsGen();
+								}
+								else if(newUser.Location == "Cave"){
+								caveEventsGen();
+							}
+							
                                 //document.getElementById("input").value = "";
-
                             }
                             //forward
                             if (directions[j].name == "forward" && directionFace == "forward") {
@@ -369,37 +418,52 @@ function action()
                                 directions[3].name = "left"
                             }
                             alert(directionFace);
-
-						   if (newUser.CoOrdinates.Xaxis >= 3 && newUser.CoOrdinates.Yaxis >= 2 && newUser.CoOrdinates.Xaxis <= 5 && newUser.CoOrdinates.Yaxis <= 5) // just used as an example. i have suggested that within these coOrdinates the user can see the cave
+							
+							for(var i = 0; i < locations.length; i++)
 							{
-								writeToTextArea("If you move to area 6,2 you will find a Forgotten Cave! or you can turn around and explore a different area!"); // i think we should tell the user where they are etc. allowing them to navigate to areas
+								if (locations[i].Xaxis == newUser.CoOrdinates.Xaxis && locations[i].Yaxis == newUser.CoOrdinates.Yaxis)
+								{
+									writeToTextArea("You have discovered a " + locations[i].Name + "! move DOWN to explore!");
+									currentLocation = locations[i].Name; 
+								}
 							}
-							if (newUser.CoOrdinates.Xaxis == 6 && newUser.CoOrdinates.Yaxis == 2) //this works and we can use this as a base to find locations.
-							{
-								writeToTextArea("You have discovered The Forgotten Cave! move DOWN to explore!");
-							}
-                        }
+							//if (newUser.CoOrdinates.Xaxis >= 3 && newUser.CoOrdinates.Yaxis >= 2 && newUser.CoOrdinates.Xaxis <= 5 && newUser.CoOrdinates.Yaxis <= 5) // just used as an example. i have suggested that within these coOrdinates the user can see the cave
+							//{
+							//	writeToTextArea("If you move to area 6,2 you will find a Forgotten Cave! or you can turn around and explore a different area!"); // i think we should tell the user where they are etc. allowing them to navigate to areas
+							//}
+							//if (newUser.CoOrdinates.Xaxis == 6 && newUser.CoOrdinates.Yaxis == 2) //this works and we can use this as a base to find locations.
+							//{
+							//	writeToTextArea("You have discovered The Forgotten Cave! move DOWN to explore!");
+							//}
+                        }	
                     }
+					
                 }
             }
-        }
+					for (var j = 0; j < strArray.length; j++) // loop to find the key word Down! or up! 
+								{
+										if (strArray[j] == "down") 
+										{
+											
+											writeToTextArea("You have moved down to " + currentLocation + " Have umm fun...?");
+											newUser.CoOrdinates.Xaxis = 0; // reset coOrdinates to 0,0 as its a new area 
+											newUser.CoOrdinates.Yaxis = 0;
+											directionFace = "forward";
+											alert(directionFace);
+											newUser.Location = currentLocation;
+										}
+										else if (strArray[j] == "up" && newUser.CoOrdinates.Xaxis == 5 && newUser.CoOrdinates.Yaxis == 5) // if the user navigates to this spot and inputs up, they will return to original coOrdinates.
+										{																						//allowing them to carry on with the game etc.
+											newUser.CoOrdinates.Xaxis = locations[i].Xaxis;
+											newUser.CoOrdinates.Yaxis = locations[i].Yaxis
+											newUser.Location = "plainGround";
+											writeToTextArea("You have now left" + currentLocation);
+										}
+								}
+		}
+		
     }
 	
-	for (var i = 0; i < strArray.length; i++) // loop to find the key word Down! or up! 
-    {
-        if (strArray[i] == "down") {
-			writeToTextArea("You have moved down to the forgotten cave! Have umm fun...?");
-            newUser.CoOrdinates.Xaxis = 0; // reset coOrdinates to 0,0 as its a new area 
-            newUser.CoOrdinates.Yaxis = 0;
-            directionFace = "forward";
-			alert(directionFace);
-        }
-        else if (strArray[i] == "up" && newUser.CoOrdinates.Xaxis == 5 && newUser.CoOrdinates.Yaxis == 5) // if the user navigates to this spot and inputs up, they will return to original coOrdinates.
-        {																								//allowing them to carry on with the game etc.
-            newUser.CoOrdinates.Xaxis = 6;
-            newUser.CoOrdinates.Yaxis = 2;
-        }
-    }
 	
 	if (chosenMonster.Name == "null" && checkValue == 0)
 	{
@@ -548,6 +612,21 @@ function spawnMonster()
 	}
 }
 
+function spawnCaveMonster()
+{
+	var rand = Math.floor(Math.random() * caveMonsters.length);
+	chosenMonster = caveMonsters[rand];
+	if(chosenMonster.Name == "null")
+	{
+		spawnCaveMonster();
+	}
+	else
+	{
+		currentMonsterHealth = chosenMonster.Health;
+		writeToTextArea("You are fighting: " + chosenMonster.Name);
+	}
+}
+
 function spawnChest() 
 {
 	checkValue = 1;
@@ -559,19 +638,19 @@ function userStatus() {
     writeToTextArea("You have chosen to Check Status");
     writeToTextArea("Your Current level is: " + newUser.Level);
 
-    for (var i = 0; i < monstersKilled.length; i++) {
+    for (var i = 0; i < monstersKilled.length; i++) 
+	{
         writeToTextArea("Monster killed: " + monstersKilled[i]);
 
     }
-
-
 }
 
-function userInventory() {
-
-
-    for (var i = 0; i < items.length; i++) {
-        if (items[i].Inventory > 0) {
+function userInventory() 
+{
+    for (var i = 0; i < items.length; i++) 
+	{
+        if (items[i].Inventory > 0) 
+		{
             writeToTextArea("Item Name: " + items[i].Name + " Quantity: " + items[i].Inventory);
         }
     }
@@ -583,6 +662,11 @@ function enemyInfo()
     writeToTextArea("You are currently fighting: " + chosenMonster.Name);
     writeToTextArea(chosenMonster.Name + " Spawned with " + chosenMonster.Health + "HP" + " and now has: " + currentMonsterHealth + "HP remaining " + " Keep fighting!");
     writeToTextArea("Enemy Information: ");
+}
+
+function userHealth()
+{
+	writeToTextArea("Your health is now " + newUser.Health + " out of " + newUser.MaxHealth);
 }
 
 function roamingLoot()
@@ -620,7 +704,6 @@ function roamingLoot()
     }
 }
 
-
 function defeat()
 {
     newUser.Health = 200;
@@ -630,4 +713,3 @@ function defeat()
     newUser.MaxEXP = 20;
     start();
 }
-
