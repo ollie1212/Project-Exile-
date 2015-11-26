@@ -177,7 +177,7 @@ function caveEventsGen()  // function for cave events. simular to above function
 function start()  // function linked to the on click property in our html page. gets called when the user clicks on the start button. 
 {
     writeToTextArea("Welcome to Our Text Based Adventure Game!");  // writes to text area
-		writeToTextArea("insert story line here....");
+		writeToTextArea("The Facility, is a secret government research organisation working to develop a variety of pacification methods. You decide the role you play in the ensuing chaos. The Scientist, The Engineer, or The Mercenary. Who will you choose?");
 	
     //spawnMonster(); // spawns monster 
 }
@@ -211,7 +211,7 @@ function action() // main function that gets called when the user clicks the act
     var playerTurn = 1; 
     var enemyTurn = 0;
 	var userInput = document.getElementById("userInput").value.toLowerCase(); // gets the input from the user and converts it to lower case 
-      
+  
     var strArray = userInput.split(" ");  // splits user input by a space " " and stores the values in the strArray
 	
 
