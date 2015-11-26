@@ -1,56 +1,58 @@
-var userWeapon = "";
-var chosenMonster = "";
+var userWeapon = ""; // holds users current weapon 
+var chosenMonster = ""; // stores the current monster the user is fighting as a montsers object 
 var count = 0;
-var monstersKilled = [];
-var directionFace = "forward";
-var currentMonsterHealth;
-var userWeaponDamage;
-var userActionDamage;
+var monstersKilled = []; // this array holds the names of the montsers the user has killed 
+var directionFace = "forward"; // characters direction 
+var currentMonsterHealth; 
+var userWeaponDamage; // stores chosen wepaon damage 
+var userActionDamage; // stores chosen action damage 
 var checkValue = 0;
-var currentLocation = "";
+var currentLocation = ""; // holds characters current location 
+var choiceCount = 0;
+
 var events = [
 	{ Name: "Special-Weapon", Chance: 0.05 },
-	{ Name: "Chest", Chance: 0.25 },
+	{ Name: "Chest", Chance: 0.25 },           // array of events the user can find as they travel around the map
 	{ Name: "Monster", Chance: 0.60 },
 ]
 
 var locations = [
-	{Name:"cave", Xaxis:1, Yaxis:1},
+	{Name:"cave", Xaxis:1, Yaxis:1},		// stores the possible locations on the map, they are dependent on the users x and y axis 
 	{Name:"graveyard", Xaxis: 2, Yaxis:4}
 ]
 
 var caveEvents = [
-	{Name:"SpecialCaveWeapon", Chance:0.05},
+	{Name:"SpecialCaveWeapon", Chance:0.05},   // events specifically for the cave location 
 	{Name:"CaveLoot", Chance:0.25},
 	{Name: "CaveMonster", Chance: 0.80}
 ]
 
 var actionArray = [
 { Name: "attack", DamageMulti: 1.2 },
-{ Name: "Slash", DamageMulti: 1.1 },
+{ Name: "Slash", DamageMulti: 1.1 },   // all possbile actions the user can type into the first textbox
 { Name: "talk", DamageMulti: 0.8 }
 ];
 
 //stores all the directions the user can take 
 var directions = [
-    { name: "forward", XAxis: 0, YAxis: 1 },
+    { name: "forward", XAxis: 0, YAxis: 1 },  
     { name: "right", XAxis: 1, YAxis: 0 },
-    { name: "backward", XAxis: 0, YAxis: -1 },
+    { name: "backward", XAxis: 0, YAxis: -1 },   
     { name: "left", XAxis: -1, YAxis: 0 },
 ]
 
-var keywordArray = ["inventory", "status", "enemy", "health"];
+var keywordArray = ["inventory", "status", "enemy", "health"]; // added key words the text parser will recongnise 
 var userAction = "";
 var userCheckKeyword = "";
 
 function coOrdinates(Xaxis, Yaxis) 
 {
-    this.Xaxis = Xaxis;
+    this.Xaxis = Xaxis;      // coOrdinates constructor 
     this.Yaxis = Yaxis;
 }
 
 
-function actor(Name, Health, MaxHealth, Level, EXP, MaxEXP, CoOrdinates, MonDamage, Location)
+function actor(Name, Health, MaxHealth, Level, EXP, MaxEXP, CoOrdinates, MonDamage, Location, Profession) // actor class, requires all of these values when a new object is initiated 
 {
     this.Name = Name;
     this.Health = Health;
@@ -61,28 +63,29 @@ function actor(Name, Health, MaxHealth, Level, EXP, MaxEXP, CoOrdinates, MonDama
     this.CoOrdinates = new coOrdinates(0, 0);
     this.MonDamage = MonDamage;
 	this.Location = Location;
+	this.Profession = Profession;
 }
 
-var newUser = new actor("you", 200, 200, 1, 0, 20, coOrdinates(0, 0), 0, "plainGround");
+var newUser = new actor("you", 200, 200, 1, 0, 20, coOrdinates(0, 0), 0, "plainGround", " "); // actor object called newUser. 
 
 var monsters = [
-    new actor("skeleton", 40, 40, 1, 15, 15, 0, 5, " "),
-    new actor("wolf", 60, 60, 1, 20, 20, 0, 15, " "),
-    new actor("highwayman", 200, 200, 3, 40, 40, 0, 40, " "),
-    new actor("hobb", 120, 120, 2, 30, 30, 0, 30, " "),
-	new actor("null", 0,0,0,0,0,0,0, " "),
+    new actor("skeleton", 40, 40, 1, 15, 15, 0, 5, " ", " "),
+    new actor("wolf", 60, 60, 1, 20, 20, 0, 15, " ", " "),
+    new actor("highwayman", 200, 200, 3, 40, 40, 0, 40, " ", " "),  // new actor objects stored in an array called monsters. each object has the required values stated in the actor constructor
+    new actor("hobb", 120, 120, 2, 30, 30, 0, 30, " ", " "),
+	new actor("null", 0,0,0,0,0,0,0, " ", " "),
 ];
 
 var caveMonsters = [
-	new actor("imp", 50, 50, 2, 25, 25, 0, 25),
-	new actor("null",0,0,0,0,0,0,0," "),
+	new actor("imp", 50, 50, 2, 25, 25, 0, 25, " ", " "), // new actor objects for monsters specifically for the cave
+	new actor("null",0,0,0,0,0,0,0," ", " "),
 ]
 
 function prefix(Name, DamageMod, ConditionMod, ValueMod, SpecialEffect, Rarity)
 {
     this.Name = Name;
     this.DamageMod = DamageMod;
-	this.ConditionMod = ConditionMod;
+	this.ConditionMod = ConditionMod;   // weapon prefix class
 	this.ValueMod = ValueMod;
 	this.SpecialEffect = SpecialEffect;
 	this.Rarity = Rarity;
@@ -90,7 +93,7 @@ function prefix(Name, DamageMod, ConditionMod, ValueMod, SpecialEffect, Rarity)
 
 var weaponPrefix = 
 [
-	new prefix("common", 1, 1, 1, "none", "none"),
+	new prefix("common", 1, 1, 1, "none", "none"),  		// new prefix objects for wepaons 
 	new prefix("rusty", 0.6, 0.4, 0.4, "tetanus", "common"),
 	new prefix("trusty", 1, 1, 1, "unbreakable", "unique"),
 	new prefix("antique", 0.6, 0.2, 5.25, "none", "rare"),
@@ -104,14 +107,14 @@ function weapons(Name, Damage, Condition, Value, Prefix)
 {
     this.Name = Name;
     this.Damage = Damage;
-	this.Condition = Condition;
+	this.Condition = Condition; 			// weapon class with prefix added as an arguement 
 	this.Value = Value;
     this.Prefix = new prefix("devNULL", 1);
 }
 
 var weapon = [
 	new weapons("sword", 15, weaponPrefix[2]),
-	new weapons("halberd", 25, weaponPrefix[0]),
+	new weapons("halberd", 25, weaponPrefix[0]),  // array of wepaon objects 
 	new weapons("rapier", 10, weaponPrefix[0]),
 	new weapons("claymore", 20, weaponPrefix[0])
 ];
@@ -122,19 +125,19 @@ var items = [ // order the items to the highest lootChance and the value has to 
     { Name: "nothing", Inventory: 0, Value: 50, LootChance: 1 },
 ];
 
-function eventsGen()
-{
+function eventsGen()    // fucntion for calling the coresponding function depending on the randNum variable 
+{						// this fucntion gets called only when the user in in the "plainGround" area this happens everytime the user moves coOrdinates
     var count = 0;
-    var randNumb = Math.random();
+    var randNumb = Math.random();  // random number generater for chance of function call
 	
     for (var i = 0; i < events.length; i++)
     {
         if (count == 0) {
-            alert(randNumb);
-            if (events[i].Name == "Monster" && events[i].Chance >= randNumb)
+            
+            if (events[i].Name == "Monster" && events[i].Chance >= randNumb)  // if statement to check what event has been chosen by the randNumb 
             {
                 writeToTextArea("You have encountered an enemy!");
-                spawnMonster();
+                spawnMonster(); // calls coresponding function- in this case a monster will be spawned 
                 count++;
             }
             else if (events[i].Name == "Chest" && events[i].Chance >= randNumb && randNumb < 0.5 )
@@ -152,7 +155,7 @@ function eventsGen()
     }
 }
 
-function caveEventsGen()
+function caveEventsGen()  // function for cave events. simular to above function  but only gets called when user is in the cave location
 {
 	var count = 0;
 	var randNumb = Math.random();
@@ -171,14 +174,16 @@ function caveEventsGen()
 	}
 }
 
-function start()
+function start()  // function linked to the on click property in our html page. gets called when the user clicks on the start button. 
 {
-    writeToTextArea("Welcome to Our Text Based Adventure Game!");
-    spawnMonster();
+    writeToTextArea("Welcome to Our Text Based Adventure Game!");  // writes to text area
+		writeToTextArea("insert story line here....");
+	
+    //spawnMonster(); // spawns monster 
 }
 
 
-function drops() 
+function drops()  // determines the loot you will receive from an action e.g. moving around the map 
 {
     var randNumb = Math.random();
     var count = 0;
@@ -200,33 +205,88 @@ function drops()
     }
 }
 
-function action() 
+function action() // main function that gets called when the user clicks the action button
 {
     var chanceTOCallFunction = Math.floor(Math.random() * 5) + 1;
     var playerTurn = 1; 
     var enemyTurn = 0;
+	var userInput = document.getElementById("userInput").value.toLowerCase(); // gets the input from the user and converts it to lower case 
+      
+    var strArray = userInput.split(" ");  // splits user input by a space " " and stores the values in the strArray
+	
 
-    var userInput = document.getElementById("userInput").value.toLowerCase();
-    var strArray = userInput.split(" ");
-	
-	
-    for (var i = 0; i < strArray.length; i++)
+    for (var i = 0; i < strArray.length; i++) {
+        var bool = 0;
+        
+        if (strArray[i] == "description") {
+
+            for (var i = 0; i < strArray.length; i++) {
+
+                var professionCheck = strArray[i];
+
+                switch (professionCheck) {
+                    case "scientist":
+                        infoScientist();
+                        bool = 1;
+                        break;
+                    case "mercenary":
+                        infoMercenary();
+                        bool = 1;
+                        break;
+                    case "engineer":
+                        infoEngineer();
+                        bool = 1;
+                        break;
+
+                }
+            }
+        }
+        else {
+            bool = 1;
+
+            if (strArray != "description" && bool != 1) {
+
+                writeToTextArea("Try typing: <description> + the profession you wish to find out more about!");
+
+            }
+
+            else {
+                if (strArray[i] == "yes" && choiceCount == 1) {
+                    writeToTextArea("You have chosen The Scientist");
+                    newUser.Profession = "scientist";
+                }
+                else if (strArray[i] == "yes" && choiceCount == 2) {
+                    writeToTextArea("You have chosen The Mercenary");
+                    newUser.Profession = "mercenary";
+                }
+                else if (strArray[i] == "yes" && choiceCount == 3) {
+                    writeToTextArea("You have chosen The Engineer");
+                    newUser.Profession = "engineer";
+                }
+            }
+        }
+    }
+    
+		
+		
+		
+    for (var i = 0; i < strArray.length; i++) // loops through contense of strArray 
     {
-        if (strArray[i] == "check")
+        if (strArray[i] == "check")  // if key word "check" is found enter next loop 
         {
-            for (var i = 0; i < strArray.length; i++)
+            for (var i = 0; i < strArray.length; i++) // now check has been found loop through the keyword Array to see if the user has type a key word 
             {
                 for (var j = 0; j < keywordArray.length; j++)
                 {
 
-                    if (strArray[i] == keywordArray[j])
+                    if (strArray[i] == keywordArray[j]) // if users input equals an element in the key word array 
                     {
-                        userCheckKeyword = strArray[i];
+                        userCheckKeyword = strArray[i]; // sets this variable to the users word.
 
-                        switch (userCheckKeyword)
+                        switch (userCheckKeyword) // switch case used to identify what element in the keyword array was found 
                         {
 
-                            case "status":
+                            case "status":  // exmaple if the user types check status this case would be true and the following code would be executed
                                 userStatus();
 								playerTurn = 0;
                                 break;
@@ -258,15 +318,15 @@ function action()
     for (var i = 0; i < strArray.length; i++) // this is the text parser for going around the map
     {
 	
-        if (strArray[i] == "go") 
+        if (strArray[i] == "go") // checking for the "go" keyword 
 		{
             for (var i = 0; i < strArray.length; i++) 
 			{
-                for (var j = 0; j < directions.length; j++) 
+                for (var j = 0; j < directions.length; j++) // loops through direction array and checks whether a valid direction has been typed 
 				{
                     if (countTemp == 0) 
 					{
-                        if (strArray[i] == directions[j].name) 
+                        if (strArray[i] == directions[j].name) // gets the name of the direction object found by previous loop
 						{
 
                             newUser.CoOrdinates.Yaxis = newUser.CoOrdinates.Yaxis + directions[j].YAxis; //increase or decreases the y axis of the user's character depending on the direction they are going
@@ -285,10 +345,10 @@ function action()
 							{
 								
 								checkValue = 1;
-                                writeToTextArea("You went " + directions[j].name);
+                                writeToTextArea("You went " + directions[j].name); // writting to text area the direction the user chose to go 
 								playerTurn = 0;
                                 alert(newUser.CoOrdinates.Xaxis + "," + newUser.CoOrdinates.Yaxis);
-								if(newUser.Location == "plainGround"){
+								if(newUser.Location == "plainGround"){ // calls required function depending on the users location 
                                 eventsGen();
 								}
 								else if(newUser.Location == "Cave"){
@@ -297,7 +357,10 @@ function action()
 							
                                 //document.getElementById("input").value = "";
                             }
-                            //forward
+                            
+							// the following if statements are to find out what coOrdinate the user wants to move to and what direction the user will now be facing  
+							
+							//forward
                             if (directions[j].name == "forward" && directionFace == "forward") {
                                 directionFace = "forward"
                                 directions[0].name = "forward"
@@ -417,16 +480,20 @@ function action()
                                 directions[2].name = "backward"
                                 directions[3].name = "left"
                             }
-                            alert(directionFace);
+                            
 							
-							for(var i = 0; i < locations.length; i++)
+							for(var i = 0; i < locations.length; i++) 
 							{
-								if (locations[i].Xaxis == newUser.CoOrdinates.Xaxis && locations[i].Yaxis == newUser.CoOrdinates.Yaxis)
+								if (locations[i].Xaxis == newUser.CoOrdinates.Xaxis && locations[i].Yaxis == newUser.CoOrdinates.Yaxis) // checks where the user is on the map and if they are in a new location 
 								{
 									writeToTextArea("You have discovered a " + locations[i].Name + "! move DOWN to explore!");
 									currentLocation = locations[i].Name; 
 								}
 							}
+							
+							// dev comments  
+							
+							
 							//if (newUser.CoOrdinates.Xaxis >= 3 && newUser.CoOrdinates.Yaxis >= 2 && newUser.CoOrdinates.Xaxis <= 5 && newUser.CoOrdinates.Yaxis <= 5) // just used as an example. i have suggested that within these coOrdinates the user can see the cave
 							//{
 							//	writeToTextArea("If you move to area 6,2 you will find a Forgotten Cave! or you can turn around and explore a different area!"); // i think we should tell the user where they are etc. allowing them to navigate to areas
@@ -449,7 +516,6 @@ function action()
 											newUser.CoOrdinates.Xaxis = 0; // reset coOrdinates to 0,0 as its a new area 
 											newUser.CoOrdinates.Yaxis = 0;
 											directionFace = "forward";
-											alert(directionFace);
 											newUser.Location = currentLocation;
 										}
 										else if (strArray[j] == "up" && newUser.CoOrdinates.Xaxis == 5 && newUser.CoOrdinates.Yaxis == 5) // if the user navigates to this spot and inputs up, they will return to original coOrdinates.
@@ -465,7 +531,7 @@ function action()
     }
 	
 	
-	if (chosenMonster.Name == "null" && checkValue == 0)
+	if (chosenMonster.Name == "null" && checkValue == 0) // sets monster to null so the user cannot keep attacking that dead monster
 	{
 		writeToTextArea("There are no enemies to attack")
 		document.getElementById("userInput").value = "";
@@ -549,7 +615,7 @@ function action()
     {
         playerTurn = 1;
         enemyTurn = 0;
-        if (newUser.Health >= 0 && currentMonsterHealth >= 0)
+        if (newUser.Health >= 0 && currentMonsterHealth >= 0) // statement that checks if the monsters health is less than 0 
         {
             newUser.Health = newUser.Health - chosenMonster.MonDamage;
             writeToTextArea(chosenMonster.Name + " has Attacked you! Dealing: " + chosenMonster.MonDamage + " Damage" + " You have: " + newUser.Health + " Health remaining");
@@ -592,7 +658,7 @@ function action()
 
 
 
-function writeToTextArea(string)
+function writeToTextArea(string) // function that takes a string as an arguement and writes that string to the text area 
 {
     document.getElementById("output").value = "" + string + "\n" + document.getElementById("output").value.replace("", "");
 
@@ -611,7 +677,7 @@ function spawnMonster()
     writeToTextArea("You are fighting: " + chosenMonster.Name);
 	}
 }
-
+ // spawns cave monsters  
 function spawnCaveMonster()
 {
 	var rand = Math.floor(Math.random() * caveMonsters.length);
@@ -636,7 +702,7 @@ function spawnChest()
 
 function userStatus() {
     writeToTextArea("You have chosen to Check Status");
-    writeToTextArea("Your Current level is: " + newUser.Level);
+    writeToTextArea("Your Current level is: " + newUser.Level);			// functions linked to switch case  
 
     for (var i = 0; i < monstersKilled.length; i++) 
 	{
@@ -645,7 +711,7 @@ function userStatus() {
     }
 }
 
-function userInventory() 
+function userInventory() // function that writes the users current inventory to the text area 
 {
     for (var i = 0; i < items.length; i++) 
 	{
@@ -669,7 +735,7 @@ function userHealth()
 	writeToTextArea("Your health is now " + newUser.Health + " out of " + newUser.MaxHealth);
 }
 
-function roamingLoot()
+function roamingLoot() // special weapons function. this function has a low chance of ever being called 
 {
 	checkValue = 1;
     var weaponChance = Math.floor(Math.random() * 100) + 1;
@@ -686,15 +752,23 @@ function roamingLoot()
     if (newUser.Level <= 3 && weaponChance <= 70)
     {		
 			weapon.push(new weapons("dragonblade", 45, weaponPrefix[4]));	
+			writeToTextArea("You have found some special Loot!");
+			writeWeaponToTextArea();
     }
     else if (newUser.Level > 3 && newUser.Level <= 5 && weaponChance > 70)
     {
         weapon.push(new weapons("ghostblade", 70, weaponPrefix[6]));
-    }
-
-    writeToTextArea("You have found some special Loot!");
-
-    for (var i = 0; i < weapon.length; i++)
+		writeToTextArea("You have found some special Loot!");
+		writeWeaponToTextArea();
+    }else
+	{
+		writeToTextArea("You have not found anything this time! maybe your level is not high enough!!");
+	}
+   
+}
+function writeWeaponToTextArea()
+{
+	 for (var i = 0; i < weapon.length; i++)
     {
         var count = i;
         if (count == weapon.length - 1)
@@ -702,9 +776,9 @@ function roamingLoot()
             writeToTextArea("New Weapon Found: " + weapon[count].Name);
         }
     }
+	
 }
-
-function defeat()
+function defeat()  // gets called if the user dies. game over 
 {
     newUser.Health = 200;
     newUser.MaxHealth = 200;
@@ -713,3 +787,29 @@ function defeat()
     newUser.MaxEXP = 20;
     start();
 }
+
+function infoScientist()
+{
+	
+	writeToTextArea("The Scientist: \nHere, in The Facility, you have made ground breaking genetic discoveries. Although, one deal with the Government has ruined the career you have built. This deal was to create a genetically enhanced weapon to pacify riots and eliminate opposition. That was until the failed prototypes escaped and the Government pinned the inhumane experiments on you. You are now exiled to the plains where most of these experiments now roam.");
+	writeToTextArea("If you wish to take on this profession type yes");
+	writeToTextArea("or keep reading the other descriptions");
+	choiceCount = 1;
+}
+
+function infoMercenary()
+{
+	writeToTextArea("The Mercenary: \nExtensive combat experience had your instincts screaming at you that there was something off with this next job. The Facility was a highly classified Government research facility that had top notch security. The fact that they hired you was a mystery until the monsters broke free from their creators. As the lone survivor of the massacre, you have been exiled by the Government to the plains in order to maintain secrecy.");
+	writeToTextArea("If you wish to take on this profession type yes");
+	writeToTextArea("or keep reading the other descriptions");
+	choiceCount = 2;
+}
+
+function infoEngineer()
+{
+    writeToTextArea("The Engineer: \nAs a craftsman, you made sure that every part of your product was built to your client’s specification. That was until the Government placed a very cryptic order for “very large and strong cages”. Not knowing what the purpose was for these cages, you proceeded to build them but once the cages were loaded with monstrosities beyond human belief you knew that the cages wouldn’t last long. Following the Government’s cryptic instructions proved to be your worst mistake. You have now been exiled from civilisation for suspected sabotage and treason.");
+    writeToTextArea("If you wish to take on this profession type yes");
+    writeToTextArea("or keep reading the other descriptions");
+    choiceCount = 3;
+}
+
