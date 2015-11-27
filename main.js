@@ -103,20 +103,22 @@
 		new prefix("baneforged", 2, 2, 0.1, "argh", "unique")
 	];
 
-	function weapons(Name, Damage, Condition, Value, Prefix)
+	function weapons(Name, Damage, Inventory, Condition, Value, Prefix)
 	{
 		this.Name = Name;
 		this.Damage = Damage;
+        this.Inventory = Inventory
 		this.Condition = Condition; 			// weapon class with prefix added as an arguement 
 		this.Value = Value;
 		this.Prefix = new prefix("devNULL", 1);
 	}
 
 	var weapon = [
-		new weapons("sword", 15, weaponPrefix[2]),
-		new weapons("halberd", 25, weaponPrefix[0]),  // array of wepaon objects 
-		new weapons("rapier", 10, weaponPrefix[0]),
-		new weapons("claymore", 20, weaponPrefix[0])
+		new weapons("sword", 15, 0,weaponPrefix[2]),
+		new weapons("halberd", 25, 0, weaponPrefix[0]),  // array of wepaon objects 
+		new weapons("rapier", 10, 0, weaponPrefix[0]),
+		new weapons("claymore", 20, 0, weaponPrefix[0]),
+
 	];
 
 	var items = [ // order the items to the highest lootChance and the value has to be from 0 to 1
@@ -125,8 +127,8 @@
 		{ Name: "nothing", Inventory: 0, Value: 50, LootChance: 1 },
 	];
 
-	function eventsGen()    // fucntion for calling the coresponding function depending on the randNum variable 
-	{						// this fucntion gets called only when the user in in the "plainGround" area this happens everytime the user moves coOrdinates
+	function eventsGen()    // function for calling the coresponding function depending on the randNum variable 
+	{						// this function gets called only when the user in in the "plainGround" area this happens everytime the user moves coOrdinates
 		var count = 0;
 		var randNumb = Math.random();  // random number generater for chance of function call
 		
@@ -563,32 +565,49 @@
 				{
 					for (var j = 0; j < weapon.length; j++)
 					{
-						if (strArray[i] == weapon[j].Name)
+						if (strArray[i] == weapon[j].Name )
 						{
 							userWeapon = strArray[i];
 							userWeaponDamage = weapon[j].Damage;
 							playerTurn = 0;
 							enemyTurn = 1;
+
 						}
+						
 					}
 				}
-				//attack text parser
-				for (var i = 0; i < strArray.length; i++)
+				var attack = false;
+			    //attack text parser
+				for (var i = 0; i < weapon.length; i++)
 				{
-					for (var j = 0; j < actionArray.length; j++)
-					{
-						if (strArray[i] == actionArray[j].Name)
-						{
-							userAction = strArray[i];
-							userActionDamage = actionArray[j].DamageMulti;
-							userOverallDamage = userWeaponDamage * userActionDamage;
-							currentMonsterHealth = currentMonsterHealth - userOverallDamage;
-							writeToTextArea("" + newUser.Name + " " + userAction + " " + chosenMonster.Name + " with " + userWeapon + " Dealing " + userOverallDamage);
-							writeToTextArea(chosenMonster.Name + " has " + currentMonsterHealth + " Health remaining");
-							playerTurn = 0;
-							enemyTurn = 1;
-						}
-					}
+				    for (var j = 0; j < strArray.length; j++)
+				    {
+				        for (var k = 0; k < actionArray.length; k++)
+				        {
+				            if (strArray[j] == "attack")
+				            {
+				                attack = true;
+				            }
+				            if (weapon[i].Inventory <= 0 && attack == true)
+				            {
+				                writeToTextArea("You don't have that weapon");
+				                return 0;
+				            }
+				            if (strArray[j] == actionArray[k].Name)
+				            {
+				                userAction = strArray[j];
+				                userActionDamage = actionArray[k].DamageMulti;
+				                userOverallDamage = userWeaponDamage * userActionDamage;
+				                currentMonsterHealth = currentMonsterHealth - userOverallDamage;
+				                writeToTextArea("" + newUser.Name + " " + userAction + " " + chosenMonster.Name + " with " + userWeapon + " Dealing " + userOverallDamage);
+				                writeToTextArea(chosenMonster.Name + " has " + currentMonsterHealth + " Health remaining");
+				                playerTurn = 0;
+				                enemyTurn = 1;
+				                
+				            }
+				        }
+				    }
+				    
 				}
 				//items text parser
 				for (var i = 0; i < strArray.length; i++)
@@ -729,6 +748,13 @@
 				writeToTextArea("Item Name: " + items[i].Name + " Quantity: " + items[i].Inventory);
 			}
 		}
+		for (var j = 0; j < weapon.length; j++)
+		{
+		    if(weapon[j].Inventory > 0)
+		    {
+		        writeToTextArea("Weapons:\n" + weapon[j].Inventory + " " + weapon[j].Name);
+		    }
+		}
 		writeToTextArea("Your Inventory: ");
 	}
 
@@ -834,7 +860,7 @@
 	function mercenary()
 	{
 		writeToTextArea("Whilst being exciled you were stripped of all weapons, but being a mercenary you managed to hide a simple combat-blade! maybe this will come in handy!");
-		weapon.push(new weapons("combat-blade", 25, weaponPrefix[2]));
+		weapon.push(new weapons("combat-blade", 25, 1, weaponPrefix[2]));
 		
 	}
 	function engineer()
@@ -843,95 +869,75 @@
 		newUser.MaxHealth = newUser.MaxHealth + 20;
 	}
 
-	function colourChange()
-	{
-		
-		var plaintext = document.getElementById("userInput");
-		var stringArray = plaintext.value.split(" ");
-		for (var i = 0; i < stringArray.length; i++)
-		{
-			for(var j = 0; j < actionArray.length; j++)
-			{
-				if(stringArray[i] == actionArray[j].Name)
-				{
-					plaintext.style.color = "#49E20E";
-					var wepCheck = true;
-					
-				}					
-			}
-			
-			if(wepCheck == true)
-			{
-				for(var k = 0; k < weapon.length; k++)
-				{
-					if(stringArray[i] == weapon[k].Name)
-					{
-						plaintext.style.color = "#49E20E";
-						return 0;
-					}
-				}
-				
-			}
-			
-			if(stringArray[i] == "go")
-			{
-				var keywordCheck = true;
-			}
-			if(keywordCheck == true)
-			{
-				for(var l = 0; l < directions.length; l++)
-				{
-					if(stringArray[i] == directions[l].name)
-					{
-						if(stringArray[i] == "up" || stringArray[i] == "down" )
-						{
-							plaintext.style.color = "#49E20E";	
-							return 0;
-						}else{
-							plaintext.style.color = "#49E20E";	
-							return 0;
-						}
-					}
-										
-				}
-			}
-				if(stringArray[i] == "check")
-				{
-					var checkCheck = true;
-				}					
-				if(checkCheck == true)
-				{
-					if(stringArray[i] == "status" || stringArray[i] == "inventory" || stringArray[i] == "health" || stringArray[i] == "enemy" )
-					{
-						plaintext.style.color = "#49E20E";
-						return 0;
-					}
-				}
-				
-				if(stringArray[i] == "description")
-				{
-					var checkDescription = true;
-				}
-				
-				if(checkDescription == true)
-				{
-					if(stringArray[i] == "scientist" || stringArray[i] == "engineer" || stringArray[i] == "mercenary")
-					{
-						plaintext.style.color = "#49E20E";
-						return 0;
-					}
-				}
-				
-			if(stringArray[i] == "yes") 
-			{
-				plaintext.style.color = "#49E20E";
-				return 0;
-			}else
-			{
-				plaintext.style.color = "#ff0000";
-			}
-		
-		}
-		
+	function colourChange() {
+
+	    var plaintext = document.getElementById("userInput");
+	    var stringArray = plaintext.value.split(" ");
+	    for (var i = 0; i < stringArray.length; i++) {
+	        for (var j = 0; j < actionArray.length; j++) {
+	            if (stringArray[i] == actionArray[j].Name) {
+	                plaintext.style.color = "#49E20E";
+	                var wepCheck = true;
+
+	            }
+	        }
+
+	        if (wepCheck == true) {
+	            for (var k = 0; k < weapon.length; k++) {
+	                if (stringArray[i] == weapon[k].Name) {
+	                    plaintext.style.color = "#49E20E";
+	                    return 0;
+	                }
+	            }
+
+	        }
+
+	        if (stringArray[i] == "go") {
+	            var keywordCheck = true;
+	        }
+	        if (keywordCheck == true) {
+	            for (var l = 0; l < directions.length; l++) {
+	                if (stringArray[i] == directions[l].name) {
+	                    if (stringArray[i] == "up" || stringArray[i] == "down") {
+	                        plaintext.style.color = "#49E20E";
+	                        return 0;
+	                    } else {
+	                        plaintext.style.color = "#49E20E";
+	                        return 0;
+	                    }
+	                }
+
+	            }
+	        }
+	        if (stringArray[i] == "check") {
+	            var checkCheck = true;
+	        }
+	        if (checkCheck == true) {
+	            if (stringArray[i] == "status" || stringArray[i] == "inventory" || stringArray[i] == "health" || stringArray[i] == "enemy") {
+	                plaintext.style.color = "#49E20E";
+	                return 0;
+	            }
+	        }
+
+	        if (stringArray[i] == "description") {
+	            var checkDescription = true;
+	        }
+
+	        if (checkDescription == true) {
+	            if (stringArray[i] == "scientist" || stringArray[i] == "engineer" || stringArray[i] == "mercenary") {
+	                plaintext.style.color = "#49E20E";
+	                return 0;
+	            }
+	        }
+
+	        if (stringArray[i] == "yes") {
+	            plaintext.style.color = "#49E20E";
+	            return 0;
+	        } else {
+	            plaintext.style.color = "#ff0000";
+	        }
+
+	    }
+
 	}
 	
