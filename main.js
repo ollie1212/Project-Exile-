@@ -854,7 +854,7 @@
 			{
 				if(stringArray[i] == actionArray[j].Name)
 				{
-					plaintext.style.color = "#66CD00";	
+					plaintext.style.color = "#49E20E";	
 					return 0;
 				}					
 			}
@@ -863,13 +863,13 @@
 			{
 				if(stringArray[i] == directions[k].name)
 				{
-					plaintext.style.color = "#66CD00";	
+					plaintext.style.color = "#49E20E";	
 					return 0;
 				}					
 			}
 			if(stringArray[i] == "go" || stringArray[i] == "up" || stringArray[i] == "down" || stringArray[i] == "check" || stringArray[i] == "description" || stringArray[i] == "yes") 
 			{
-				plaintext.style.color = "#66CD00";
+				plaintext.style.color = "#49E20E";
 				return 0;
 			}else
 			{
@@ -879,5 +879,4 @@
 		}
 		
 	}
-	
 	
