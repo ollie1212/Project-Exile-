@@ -9,7 +9,7 @@
 	var checkValue = 0;
 	var currentLocation = ""; // holds characters current location 
 	var choiceCount = 0;
-
+	
 	var events = [
 		{ Name: "Special-Weapon", Chance: 0.05 },
 		{ Name: "Chest", Chance: 0.25 },           // array of events the user can find as they travel around the map
@@ -177,8 +177,8 @@
 	function start()  // function linked to the on click property in our html page. gets called when the user clicks on the start button. 
 	{
 		writeToTextArea("Welcome to Our Text Based Adventure Game!");  // writes to text area
-			writeToTextArea("The Facility, is a secret government research organisation working to develop a variety of pacification methods. You decide the role you play in the ensuing chaos. The Scientist, The Engineer, or The Mercenary. Who will you choose?");
-		
+		writeToTextArea("The Facility, is a secret government research organisation working to develop a variety of pacification methods. You decide the role you play in the ensuing chaos. The Scientist, The Engineer, or The Mercenary. Who will you choose?");
+		colourChange();
 		//spawnMonster(); // spawns monster 
 	}
 
@@ -207,6 +207,7 @@
 
 	function action() // main function that gets called when the user clicks the action button
 	{
+		colourChange();
 		var chanceTOCallFunction = Math.floor(Math.random() * 5) + 1;
 		var playerTurn = 1; 
 		var enemyTurn = 0;
@@ -823,7 +824,7 @@
 
 	function scientist()
 	{
-		writeToTextArea("Whilst being exiled you were stripped of everything, but being a scientist you managed to hide a few simple concoctions maybe these will come in handy! Check you inventory!");
+		writeToTextArea("Whilst being exciled you were stripped of everything, but being a scientist you managed to hide a few simple concoctions maybe these will come in handy! Check you inventory!");
 		items[0].Inventory++;
 		items[1].Inventory++;
 		items[1].Inventory++;
@@ -832,7 +833,7 @@
 	}
 	function mercenary()
 	{
-		writeToTextArea("Whilst being exiled you were stripped of all weapons, but being a mercenary you managed to hide a simple combat-blade! maybe this will come in handy!");
+		writeToTextArea("Whilst being exciled you were stripped of all weapons, but being a mercenary you managed to hide a simple combat-blade! maybe this will come in handy!");
 		weapon.push(new weapons("combat-blade", 25, weaponPrefix[2]));
 		
 	}
@@ -842,3 +843,41 @@
 		newUser.MaxHealth = newUser.MaxHealth + 20;
 	}
 
+	function colourChange()
+	{
+		
+		var plaintext = document.getElementById("userInput");
+		var stringArray = plaintext.value.split(" ");
+		for (var i = 0; i < stringArray.length; i++)
+		{
+			for(var j = 0; j < actionArray.length; j++)
+			{
+				if(stringArray[i] == actionArray[j].Name)
+				{
+					plaintext.style.color = "#66CD00";	
+					return 0;
+				}					
+			}
+			
+			for(var k = 0; k < directions.length; k++)
+			{
+				if(stringArray[i] == directions[k].name)
+				{
+					plaintext.style.color = "#66CD00";	
+					return 0;
+				}					
+			}
+			if(stringArray[i] == "go" || stringArray[i] == "up" || stringArray[i] == "down" || stringArray[i] == "check" || stringArray[i] == "description" || stringArray[i] == "yes") 
+			{
+				plaintext.style.color = "#66CD00";
+				return 0;
+			}else
+			{
+				plaintext.style.color = "#000000";
+			}
+		
+		}
+		
+	}
+	
+	
