@@ -214,7 +214,8 @@ function action() // main function that gets called when the user clicks the act
   
     var strArray = userInput.split(" ");  // splits user input by a space " " and stores the values in the strArray
 	
-
+if(newUser.Profession == " ")
+{
     for (var i = 0; i < strArray.length; i++) {
         var bool = 0;
         
@@ -268,7 +269,7 @@ function action() // main function that gets called when the user clicks the act
             }
         }
     }
-    
+}  
 		
 		
 		
