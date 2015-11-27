@@ -1,1 +1,52 @@
+body
+{
+	text-align: center;
+	background-color: #000000;
+}
+h1
+{
+	text-align: center;
+	font-family: free style script;
+	font-size: 30px;
+	color: #FFFFFF;
+}
 
+	h1 span
+	{
+		color: red;
+		font-style: italic;
+		font-size: 30px;
+		color: #7c0a0a;
+	}
+	
+#output
+{
+	margin-bottom: -4px;
+	padding-right: 0px;
+	padding-left: 2px;
+}
+#inputLine
+{
+	margin-top: 0px;
+}
+#userInput
+{
+	height: 23px;
+	margin-left: 0px;
+	/*width: 315px;*/
+}
+#action
+{
+	width: 63px;
+	height: 29px;
+	font-family: niagara;
+	font-size: 16px;
+
+}
+#start
+{
+	width: 63px;
+	height: 29px;
+	font-family: niagara;
+	font-size: 16px;
+}
