@@ -854,26 +854,81 @@
 			{
 				if(stringArray[i] == actionArray[j].Name)
 				{
-					plaintext.style.color = "#49E20E";	
-					return 0;
+					plaintext.style.color = "#49E20E";
+					var wepCheck = true;
+					
 				}					
 			}
 			
-			for(var k = 0; k < directions.length; k++)
+			if(wepCheck == true)
 			{
-				if(stringArray[i] == directions[k].name)
+				for(var k = 0; k < weapon.length; k++)
 				{
-					plaintext.style.color = "#49E20E";	
-					return 0;
-				}					
+					if(stringArray[i] == weapon[k].Name)
+					{
+						plaintext.style.color = "#49E20E";
+						return 0;
+					}
+				}
+				
 			}
-			if(stringArray[i] == "go" || stringArray[i] == "up" || stringArray[i] == "down" || stringArray[i] == "check" || stringArray[i] == "description" || stringArray[i] == "yes") 
+			
+			if(stringArray[i] == "go")
+			{
+				var keywordCheck = true;
+			}
+			if(keywordCheck == true)
+			{
+				for(var l = 0; l < directions.length; l++)
+				{
+					if(stringArray[i] == directions[l].name)
+					{
+						if(stringArray[i] == "up" || stringArray[i] == "down" )
+						{
+							plaintext.style.color = "#49E20E";	
+							return 0;
+						}else{
+							plaintext.style.color = "#49E20E";	
+							return 0;
+						}
+					}
+										
+				}
+			}
+				if(stringArray[i] == "check")
+				{
+					var checkCheck = true;
+				}					
+				if(checkCheck == true)
+				{
+					if(stringArray[i] == "status" || stringArray[i] == "inventory" || stringArray[i] == "health" || stringArray[i] == "enemy" )
+					{
+						plaintext.style.color = "#49E20E";
+						return 0;
+					}
+				}
+				
+				if(stringArray[i] == "description")
+				{
+					var checkDescription = true;
+				}
+				
+				if(checkDescription == true)
+				{
+					if(stringArray[i] == "scientist" || stringArray[i] == "engineer" || stringArray[i] == "mercenary")
+					{
+						plaintext.style.color = "#49E20E";
+						return 0;
+					}
+				}
+				
+			if(stringArray[i] == "yes") 
 			{
 				plaintext.style.color = "#49E20E";
 				return 0;
 			}else
 			{
-				plaintext.style.color = "#000000";
+				plaintext.style.color = "#ff0000";
 			}
 		
 		}
