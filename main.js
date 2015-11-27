@@ -823,7 +823,7 @@
 
 	function scientist()
 	{
-		writeToTextArea("Whilst being exciled you were stripped of everything, but being a scientist you managed to hide a few simple concoctions maybe these will come in handy! Check you inventory!");
+		writeToTextArea("Whilst being exiled you were stripped of everything, but being a scientist you managed to hide a few simple concoctions maybe these will come in handy! Check you inventory!");
 		items[0].Inventory++;
 		items[1].Inventory++;
 		items[1].Inventory++;
@@ -832,7 +832,7 @@
 	}
 	function mercenary()
 	{
-		writeToTextArea("Whilst being exciled you were stripped of all weapons, but being a mercenary you managed to hide a simple combat-blade! maybe this will come in handy!");
+		writeToTextArea("Whilst being exiled you were stripped of all weapons, but being a mercenary you managed to hide a simple combat-blade! maybe this will come in handy!");
 		weapon.push(new weapons("combat-blade", 25, weaponPrefix[2]));
 		
 	}
