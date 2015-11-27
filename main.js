@@ -237,20 +237,22 @@ function action() // main function that gets called when the user clicks the act
                         infoEngineer();
                         bool = 1;
                         break;
-
+					default:
+						if(i >= 1 && bool != 1)
+						 writeToTextArea("Try typing: <description> + the profession you wish to find out more about!");
+						
                 }
             }
         }
         else {
-            bool = 1;
-
-            if (strArray != "description" && bool != 1) {
+            bool = 0;
+		
+            if (strArray != "description" && strArray[i] != "yes") {
 
                 writeToTextArea("Try typing: <description> + the profession you wish to find out more about!");
 
             }
-
-            else {
+			else {
                 if (strArray[i] == "yes" && choiceCount == 1) {
                     writeToTextArea("You have chosen The Scientist");
                     newUser.Profession = "scientist";
